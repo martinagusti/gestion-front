@@ -404,6 +404,42 @@ function ProyectoDetalle({
           </div>
         </div>
       )}
+
+      <h2>Tareas</h2>
+
+      <table className="content-table">
+        <thead>
+          <tr>
+            <th>Titulo</th>
+            <th>Descripcion</th>
+            <th>Estado</th>
+            <th>Empleado Id</th>
+            <th>Prioridad</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {tareas?.map((element, index) => {
+            return (
+              <tr key={index}>
+                <td>{element.titulo}</td>
+                <td>{element.descripcion}</td>
+                <td>{element.estado}</td>
+                <td>{element.id_empleado}</td>
+                <td>{element.prioridad}</td>
+
+                <td>
+                  <button
+                    onClick={() => deleteEmpleadoFunction(element)}
+                    className="empleados-btn-eliminar"
+                  ></button>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 }

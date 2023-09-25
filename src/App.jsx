@@ -34,11 +34,13 @@ function App() {
   const [idProyecto, setIdProyecto] = useState();
   const [empleadosAsignados, setEmpleadosAsignados] = useState();
 
+  const [page, setPage] = useState();
+
   return (
     <>
       <div className="app-container">
-        <Header />
-        {token && <SideBar nivel={nivel} />}
+        <Header page={page} />
+        {token && <SideBar nivel={nivel} setPage={setPage} />}
         {!token && <Login />}
         <Routes>
           <Route path="/login" element={<Login />} />

@@ -3,4 +3,16 @@
   height: 70px;
   background-color: rgb(50, 64, 117);
   color: white;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+}
+
+.header-container h1 {
+  margin-left: 10px;
+  color: rgb(18, 215, 235);
+}
+
+.header-container div {
+  margin-left: 10px;
 }

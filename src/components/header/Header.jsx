@@ -1,9 +1,10 @@
 import "./header.css";
 
-function Header() {
+function Header({ page }) {
   return (
     <div className="header-container">
-      <h1>Online Valles Gestion</h1>
+      <div className="img-logo"></div>
+      <h1>{page}</h1>
     </div>
   );
 }

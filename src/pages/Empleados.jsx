@@ -143,12 +143,17 @@ function Empleados({ empleados, setEmpleados }) {
 
   return (
     <div className="empleados-container">
-      <button onClick={() => createNewEmpleado()}>Insertar Empleado</button>
+      <div className="btn-insertar-container">
+        <button className="btn-insertar" onClick={() => createNewEmpleado()}>
+          NUEVO
+        </button>
+      </div>
+
       {viewInsertEmpleado && (
         <div className="empleado-create-modal-container">
           <div className="empleado-create-modal">
             <form
-              className="empleado-form-container"
+              className="form-container"
               method="post"
               onSubmit={handleSubmit(onSubmit)}
             >

@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import "./sideBar.css";
 import { AuthContext } from "../../context/AuthContext";
 
-function SideBar({ nivel }) {
+function SideBar({ nivel, page, setPage }) {
   const navigateTo = useNavigate();
   const { setToken, setUser, token } = useContext(AuthContext);
 
@@ -18,16 +18,11 @@ function SideBar({ nivel }) {
 
   return (
     <div className="sideBar-container">
-      <div
-        className="img-logo"
-        onClick={() => {
-          navigateTo("/");
-        }}
-      ></div>
       {nivel === "administrador" && (
         <div
           className="empleados tooltip"
           onClick={() => {
+            setPage("EMPLEADOS");
             navigateTo("/empleados");
           }}
         >
@@ -37,6 +32,7 @@ function SideBar({ nivel }) {
       <div
         className="clientes tooltip"
         onClick={() => {
+          setPage("CLIENTES");
           navigateTo("/clientes");
         }}
       >
@@ -46,6 +42,7 @@ function SideBar({ nivel }) {
       <div
         className="etiquetas tooltip"
         onClick={() => {
+          setPage("ETIQUETAS");
           navigateTo("/etiquetas");
         }}
       >
@@ -55,6 +52,7 @@ function SideBar({ nivel }) {
       <div
         className="proyectos tooltip"
         onClick={() => {
+          setPage("PROYECTOS");
           navigateTo("/proyectos");
         }}
       >
@@ -64,6 +62,7 @@ function SideBar({ nivel }) {
       <div
         className="incidencias tooltip"
         onClick={() => {
+          setPage("INCIDENCIAS");
           navigateTo("/incidencias");
         }}
       >
@@ -74,6 +73,7 @@ function SideBar({ nivel }) {
         className="logout tooltip"
         onClick={() => {
           logout();
+          setPage("LOGIN");
           navigateTo("/");
         }}
       >

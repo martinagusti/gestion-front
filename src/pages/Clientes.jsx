@@ -306,183 +306,190 @@ function Clientes({ clientes, setClientes, nivel, proyectos }) {
       <button onClick={() => searchByName()}>Buscar</button>
 
       {viewInsertCliente && (
-        <div className="empleado-create-modal-container">
-          <div className="empleado-create-modal">
+        <div className="cliente-create-modal-container">
+          <div className="cliente-create-modal">
             <form
-              className="empleado-form-container"
+              className="cliente-form-container"
               method="post"
               onSubmit={handleSubmit(onSubmit)}
             >
-              <input
-                type="text"
-                id="nombre"
-                placeholder="Nombre"
-                {...register("nombre", {
-                  required: true,
-                })}
-              />
-              {errors.nombre?.type === "required" && (
-                <span>Campo requerido</span>
-              )}
-              <input
-                type="text"
-                id="razon_social"
-                placeholder="Razon Social"
-                {...register("razon_social", {
-                  required: true,
-                })}
-              />
-              {errors.razon_social?.type === "required" && (
-                <span>Campo requerido</span>
-              )}
+              <div>
+                <input
+                  type="text"
+                  id="nombre"
+                  placeholder="Nombre"
+                  {...register("nombre", {
+                    required: true,
+                  })}
+                />
+                {errors.nombre?.type === "required" && (
+                  <span>Campo requerido</span>
+                )}
+                <input
+                  type="text"
+                  id="razon_social"
+                  placeholder="Razon Social"
+                  {...register("razon_social", {
+                    required: true,
+                  })}
+                />
+                {errors.razon_social?.type === "required" && (
+                  <span>Campo requerido</span>
+                )}
 
-              <input
-                type="text"
-                id="cif"
-                placeholder="CIF"
-                {...register("cif", {
-                  required: true,
-                })}
-              />
-              {errors.cif?.type === "required" && <span>Campo requerido</span>}
+                <input
+                  type="text"
+                  id="cif"
+                  placeholder="CIF"
+                  {...register("cif", {
+                    required: true,
+                  })}
+                />
+                {errors.cif?.type === "required" && (
+                  <span>Campo requerido</span>
+                )}
 
-              <input
-                type="text"
-                id="direccion"
-                placeholder="Direccion"
-                {...register("direccion", {
-                  required: true,
-                })}
-              />
-              {errors.direccion?.type === "required" && (
-                <span>Campo requerido</span>
-              )}
+                <input
+                  type="text"
+                  id="direccion"
+                  placeholder="Direccion"
+                  {...register("direccion", {
+                    required: true,
+                  })}
+                />
+                {errors.direccion?.type === "required" && (
+                  <span>Campo requerido</span>
+                )}
 
-              <input
-                type="text"
-                id="responsable"
-                placeholder="Responsable"
-                {...register("responsable", {
-                  required: true,
-                })}
-              />
-              {errors.responsable?.type === "required" && (
-                <span>Campo requerido</span>
-              )}
+                <input
+                  type="text"
+                  id="responsable"
+                  placeholder="Responsable"
+                  {...register("responsable", {
+                    required: true,
+                  })}
+                />
+                {errors.responsable?.type === "required" && (
+                  <span>Campo requerido</span>
+                )}
 
-              <input
-                type="text"
-                id="telefono_1"
-                placeholder="Telefono_1"
-                {...register("telefono_1", {
-                  required: true,
-                })}
-              />
-              {errors.telefono_1?.type === "required" && (
-                <span>Campo requerido</span>
-              )}
+                <input
+                  type="text"
+                  id="telefono_1"
+                  placeholder="Telefono_1"
+                  {...register("telefono_1", {
+                    required: true,
+                  })}
+                />
+                {errors.telefono_1?.type === "required" && (
+                  <span>Campo requerido</span>
+                )}
 
-              <input
-                type="text"
-                id="telefono_2"
-                placeholder="Telefono_2"
-                {...register("telefono_2", {})}
-              />
+                <input
+                  type="text"
+                  id="telefono_2"
+                  placeholder="Telefono_2"
+                  {...register("telefono_2", {})}
+                />
 
-              <input
-                type="text"
-                placeholder="Email_1"
-                {...register("email_1", {
-                  required: true,
-                  pattern:
-                    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-                })}
-              />
+                <input
+                  type="text"
+                  placeholder="Email_1"
+                  {...register("email_1", {
+                    required: true,
+                    pattern:
+                      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                  })}
+                />
 
-              {errors.email_1?.type === "required" && (
-                <span>Campo requerido</span>
-              )}
-              {errors.email_1?.type === "pattern" && (
-                <span>Email no es valido</span>
-              )}
-
-              <input
-                type="text"
-                placeholder="Email_2"
-                {...register("email_2", {})}
-              />
-
-              <input
-                type="text"
-                id="sector"
-                placeholder="Sector"
-                {...register("sector", {
-                  required: true,
-                })}
-              />
-              {errors.sector?.type === "required" && (
-                <span>Campo requerido</span>
-              )}
-
-              <input
-                type="text"
-                id="fuente"
-                placeholder="Fuente"
-                {...register("fuente", {
-                  required: true,
-                })}
-              />
-              {errors.fuente?.type === "required" && (
-                <span>Campo requerido</span>
-              )}
-
-              <input
-                type="text"
-                id="web"
-                placeholder="Web"
-                {...register("web", {})}
-              />
-
-              <input
-                type="text"
-                id="url_instagram"
-                placeholder="Url instagram"
-                {...register("url_instagram", {})}
-              />
-
-              <input
-                type="text"
-                id="url_facebook"
-                placeholder="Url facebook"
-                {...register("url_facebook", {})}
-              />
-
-              <input
-                type="text"
-                id="anotaciones_hosting"
-                placeholder="Anotaciones Hosting"
-                {...register("anotaciones_hosting", {})}
-              />
-
-              <input
-                type="text"
-                id="anotaciones_cliente"
-                placeholder="Anotaciones Cliente"
-                {...register("anotaciones_cliente", {})}
-              />
-
-              <div className="modal-actions">
-                <button type="submit">CREAR</button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setViewInsertCliente(false);
-                    setErrorText(null);
-                  }}
-                >
-                  CANCELAR
-                </button>
+                {errors.email_1?.type === "required" && (
+                  <span>Campo requerido</span>
+                )}
+                {errors.email_1?.type === "pattern" && (
+                  <span>Email no es valido</span>
+                )}
               </div>
+
+              <div>
+                <input
+                  type="text"
+                  placeholder="Email_2"
+                  {...register("email_2", {})}
+                />
+
+                <input
+                  type="text"
+                  id="sector"
+                  placeholder="Sector"
+                  {...register("sector", {
+                    required: true,
+                  })}
+                />
+                {errors.sector?.type === "required" && (
+                  <span>Campo requerido</span>
+                )}
+
+                <input
+                  type="text"
+                  id="fuente"
+                  placeholder="Fuente"
+                  {...register("fuente", {
+                    required: true,
+                  })}
+                />
+                {errors.fuente?.type === "required" && (
+                  <span>Campo requerido</span>
+                )}
+
+                <input
+                  type="text"
+                  id="web"
+                  placeholder="Web"
+                  {...register("web", {})}
+                />
+
+                <input
+                  type="text"
+                  id="url_instagram"
+                  placeholder="Url instagram"
+                  {...register("url_instagram", {})}
+                />
+
+                <input
+                  type="text"
+                  id="url_facebook"
+                  placeholder="Url facebook"
+                  {...register("url_facebook", {})}
+                />
+
+                <input
+                  type="text"
+                  id="anotaciones_hosting"
+                  placeholder="Anotaciones Hosting"
+                  {...register("anotaciones_hosting", {})}
+                />
+
+                <input
+                  type="text"
+                  id="anotaciones_cliente"
+                  placeholder="Anotaciones Cliente"
+                  {...register("anotaciones_cliente", {})}
+                />
+
+                <div className="modal-actions">
+                  <button type="submit">CREAR</button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setViewInsertCliente(false);
+                      setErrorText(null);
+                    }}
+                  >
+                    CANCELAR
+                  </button>
+                </div>
+              </div>
+
               {errorText && <span>{errorText}</span>}
             </form>
           </div>
