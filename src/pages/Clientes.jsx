@@ -6,7 +6,12 @@ import { useNavigate } from "react-router-dom";
 import "./clientes.css";
 
 import { AuthContext } from "../context/AuthContext";
-import { createCliente, deleteCliente, editCliente } from "../services";
+import {
+  createCliente,
+  deleteCliente,
+  editCliente,
+  getProyectosByIdCliente,
+} from "../services";
 import { getClientes } from "../services/clientesService";
 
 function Clientes({ clientes, setClientes, nivel, proyectos }) {
@@ -37,6 +42,9 @@ function Clientes({ clientes, setClientes, nivel, proyectos }) {
   const [anotaciones_cliente, setAnotaciones_cliente] = useState(null);
 
   const [search, setSearch] = useState("");
+
+  const [popup, setPopup] = useState(false);
+  const [popupData, setPopupData] = useState("");
 
   const {
     register,
@@ -72,7 +80,7 @@ function Clientes({ clientes, setClientes, nivel, proyectos }) {
 
   const onSubmit = async (data, e) => {
     e.preventDefault();
-    console.log(data);
+
     const {
       nombre,
       razon_social,
@@ -112,8 +120,6 @@ function Clientes({ clientes, setClientes, nivel, proyectos }) {
         anotaciones_cliente
       );
 
-      console.log(created);
-      console.log(created[0]);
       const date = new Date();
       created[0].fecha_alta = date;
 
@@ -132,10 +138,22 @@ function Clientes({ clientes, setClientes, nivel, proyectos }) {
     setViewInsertCliente(true);
   };
 
-  const deleteModal = (element) => {
-    console.log(element.id);
-    setEliminando(true);
-    setIdDelete(element.id);
+  const deleteModal = async (element) => {
+    try {
+      const data = await getProyectosByIdCliente(element.id);
+      if (data.length == 0) {
+        setEliminando(true);
+        setIdDelete(element.id);
+      } else {
+        setPopup(true);
+        setPopupData(
+          "No es posible eliminar un cliente con proyectos asociados"
+        );
+      }
+    } catch (error) {
+      console.log(error);
+      setErrorText(error.response.data.error);
+    }
   };
 
   const confirmDelete = async () => {
@@ -292,18 +310,29 @@ function Clientes({ clientes, setClientes, nivel, proyectos }) {
     }
   };
 
+  const popupFunction = () => {
+    setPopup(false);
+    setPopupData("");
+  };
+
   return (
     <div className="clientes-container">
-      {nivel !== "empleado" && (
-        <button onClick={() => createNewCliente()}>Insertar Cliente</button>
-      )}
-
-      <input
-        type="text"
-        defaultValue={search}
-        onChange={handleOnChangeSearch}
-      ></input>
-      <button onClick={() => searchByName()}>Buscar</button>
+      <div className="btn-insertar-container">
+        {nivel !== "empleado" && (
+          <button className="btn-insertar" onClick={() => createNewCliente()}>
+            NUEVO
+          </button>
+        )}
+      </div>
+      <div className="search-container">
+        <input
+          type="text"
+          defaultValue={search}
+          placeholder="Cliente nombre..."
+          onChange={handleOnChangeSearch}
+        ></input>
+        <button onClick={() => searchByName()}>BUSCAR</button>
+      </div>
 
       {viewInsertCliente && (
         <div className="cliente-create-modal-container">
@@ -313,181 +342,182 @@ function Clientes({ clientes, setClientes, nivel, proyectos }) {
               method="post"
               onSubmit={handleSubmit(onSubmit)}
             >
-              <div>
-                <input
-                  type="text"
-                  id="nombre"
-                  placeholder="Nombre"
-                  {...register("nombre", {
-                    required: true,
-                  })}
-                />
-                {errors.nombre?.type === "required" && (
-                  <span>Campo requerido</span>
-                )}
-                <input
-                  type="text"
-                  id="razon_social"
-                  placeholder="Razon Social"
-                  {...register("razon_social", {
-                    required: true,
-                  })}
-                />
-                {errors.razon_social?.type === "required" && (
-                  <span>Campo requerido</span>
-                )}
+              <div className="general-container">
+                <div>
+                  <input
+                    type="text"
+                    id="nombre"
+                    placeholder="Nombre"
+                    {...register("nombre", {
+                      required: true,
+                    })}
+                  />
+                  {errors.nombre?.type === "required" && (
+                    <span>Campo requerido</span>
+                  )}
+                  <input
+                    type="text"
+                    id="razon_social"
+                    placeholder="Razon Social"
+                    {...register("razon_social", {
+                      required: true,
+                    })}
+                  />
+                  {errors.razon_social?.type === "required" && (
+                    <span>Campo requerido</span>
+                  )}
 
-                <input
-                  type="text"
-                  id="cif"
-                  placeholder="CIF"
-                  {...register("cif", {
-                    required: true,
-                  })}
-                />
-                {errors.cif?.type === "required" && (
-                  <span>Campo requerido</span>
-                )}
+                  <input
+                    type="text"
+                    id="cif"
+                    placeholder="CIF"
+                    {...register("cif", {
+                      required: true,
+                    })}
+                  />
+                  {errors.cif?.type === "required" && (
+                    <span>Campo requerido</span>
+                  )}
 
-                <input
-                  type="text"
-                  id="direccion"
-                  placeholder="Direccion"
-                  {...register("direccion", {
-                    required: true,
-                  })}
-                />
-                {errors.direccion?.type === "required" && (
-                  <span>Campo requerido</span>
-                )}
+                  <input
+                    type="text"
+                    id="direccion"
+                    placeholder="Direccion"
+                    {...register("direccion", {
+                      required: true,
+                    })}
+                  />
+                  {errors.direccion?.type === "required" && (
+                    <span>Campo requerido</span>
+                  )}
 
-                <input
-                  type="text"
-                  id="responsable"
-                  placeholder="Responsable"
-                  {...register("responsable", {
-                    required: true,
-                  })}
-                />
-                {errors.responsable?.type === "required" && (
-                  <span>Campo requerido</span>
-                )}
+                  <input
+                    type="text"
+                    id="responsable"
+                    placeholder="Responsable"
+                    {...register("responsable", {
+                      required: true,
+                    })}
+                  />
+                  {errors.responsable?.type === "required" && (
+                    <span>Campo requerido</span>
+                  )}
 
-                <input
-                  type="text"
-                  id="telefono_1"
-                  placeholder="Telefono_1"
-                  {...register("telefono_1", {
-                    required: true,
-                  })}
-                />
-                {errors.telefono_1?.type === "required" && (
-                  <span>Campo requerido</span>
-                )}
+                  <input
+                    type="text"
+                    id="telefono_1"
+                    placeholder="Telefono_1"
+                    {...register("telefono_1", {
+                      required: true,
+                    })}
+                  />
+                  {errors.telefono_1?.type === "required" && (
+                    <span>Campo requerido</span>
+                  )}
 
-                <input
-                  type="text"
-                  id="telefono_2"
-                  placeholder="Telefono_2"
-                  {...register("telefono_2", {})}
-                />
+                  <input
+                    type="text"
+                    id="telefono_2"
+                    placeholder="Telefono_2"
+                    {...register("telefono_2", {})}
+                  />
 
-                <input
-                  type="text"
-                  placeholder="Email_1"
-                  {...register("email_1", {
-                    required: true,
-                    pattern:
-                      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-                  })}
-                />
+                  <input
+                    type="text"
+                    placeholder="Email_1"
+                    {...register("email_1", {
+                      required: true,
+                      pattern:
+                        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                    })}
+                  />
 
-                {errors.email_1?.type === "required" && (
-                  <span>Campo requerido</span>
-                )}
-                {errors.email_1?.type === "pattern" && (
-                  <span>Email no es valido</span>
-                )}
-              </div>
-
-              <div>
-                <input
-                  type="text"
-                  placeholder="Email_2"
-                  {...register("email_2", {})}
-                />
-
-                <input
-                  type="text"
-                  id="sector"
-                  placeholder="Sector"
-                  {...register("sector", {
-                    required: true,
-                  })}
-                />
-                {errors.sector?.type === "required" && (
-                  <span>Campo requerido</span>
-                )}
-
-                <input
-                  type="text"
-                  id="fuente"
-                  placeholder="Fuente"
-                  {...register("fuente", {
-                    required: true,
-                  })}
-                />
-                {errors.fuente?.type === "required" && (
-                  <span>Campo requerido</span>
-                )}
-
-                <input
-                  type="text"
-                  id="web"
-                  placeholder="Web"
-                  {...register("web", {})}
-                />
-
-                <input
-                  type="text"
-                  id="url_instagram"
-                  placeholder="Url instagram"
-                  {...register("url_instagram", {})}
-                />
-
-                <input
-                  type="text"
-                  id="url_facebook"
-                  placeholder="Url facebook"
-                  {...register("url_facebook", {})}
-                />
-
-                <input
-                  type="text"
-                  id="anotaciones_hosting"
-                  placeholder="Anotaciones Hosting"
-                  {...register("anotaciones_hosting", {})}
-                />
-
-                <input
-                  type="text"
-                  id="anotaciones_cliente"
-                  placeholder="Anotaciones Cliente"
-                  {...register("anotaciones_cliente", {})}
-                />
-
-                <div className="modal-actions">
-                  <button type="submit">CREAR</button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setViewInsertCliente(false);
-                      setErrorText(null);
-                    }}
-                  >
-                    CANCELAR
-                  </button>
+                  {errors.email_1?.type === "required" && (
+                    <span>Campo requerido</span>
+                  )}
+                  {errors.email_1?.type === "pattern" && (
+                    <span>Email no es valido</span>
+                  )}
                 </div>
+
+                <div>
+                  <input
+                    type="text"
+                    placeholder="Email_2"
+                    {...register("email_2", {})}
+                  />
+
+                  <input
+                    type="text"
+                    id="sector"
+                    placeholder="Sector"
+                    {...register("sector", {
+                      required: true,
+                    })}
+                  />
+                  {errors.sector?.type === "required" && (
+                    <span>Campo requerido</span>
+                  )}
+
+                  <input
+                    type="text"
+                    id="fuente"
+                    placeholder="Fuente"
+                    {...register("fuente", {
+                      required: true,
+                    })}
+                  />
+                  {errors.fuente?.type === "required" && (
+                    <span>Campo requerido</span>
+                  )}
+
+                  <input
+                    type="text"
+                    id="web"
+                    placeholder="Web"
+                    {...register("web", {})}
+                  />
+
+                  <input
+                    type="text"
+                    id="url_instagram"
+                    placeholder="Url instagram"
+                    {...register("url_instagram", {})}
+                  />
+
+                  <input
+                    type="text"
+                    id="url_facebook"
+                    placeholder="Url facebook"
+                    {...register("url_facebook", {})}
+                  />
+
+                  <input
+                    type="text"
+                    id="anotaciones_hosting"
+                    placeholder="Anotaciones Hosting"
+                    {...register("anotaciones_hosting", {})}
+                  />
+
+                  <input
+                    type="text"
+                    id="anotaciones_cliente"
+                    placeholder="Anotaciones Cliente"
+                    {...register("anotaciones_cliente", {})}
+                  />
+                </div>
+              </div>
+              <div className="modal-actions">
+                <button type="submit">CREAR</button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setViewInsertCliente(false);
+                    setErrorText(null);
+                  }}
+                >
+                  CANCELAR
+                </button>
               </div>
 
               {errorText && <span>{errorText}</span>}
@@ -592,143 +622,141 @@ function Clientes({ clientes, setClientes, nivel, proyectos }) {
         )}
 
         {editando && (
-          <div className="modal-container">
-            <div className="modal">
+          <div className="cliente-create-modal-container">
+            <div className="cliente-create-modal">
               <form
-                className="form-edit-container"
+                className="cliente-form-container"
                 onSubmit={(event) => {
                   editar(event);
                 }}
               >
-                <label>Nombre</label>
-                <input
-                  type="text"
-                  name="nombre"
-                  defaultValue={nombre}
-                  onChange={handleOnChangeNombre}
-                />
+                <div className="general-container">
+                  <div>
+                    {" "}
+                    <label>Nombre</label>
+                    <input
+                      type="text"
+                      name="nombre"
+                      defaultValue={nombre}
+                      onChange={handleOnChangeNombre}
+                    />
+                    <label>Razon Social</label>
+                    <input
+                      type="text"
+                      name="razon_social"
+                      defaultValue={razonSocial}
+                      onChange={handleOnChangeRazonSocial}
+                    />
+                    <label>CIF</label>
+                    <input
+                      type="text"
+                      name="cif"
+                      defaultValue={cif}
+                      onChange={handleOnChangeCif}
+                    />
+                    <label>Direccion</label>
+                    <input
+                      type="text"
+                      name="direccion"
+                      defaultValue={direccion}
+                      onChange={handleOnChangeDireccion}
+                    />
+                    <label>Responsable</label>
+                    <input
+                      type="text"
+                      name="responsable"
+                      defaultValue={responsable}
+                      onChange={handleOnChangeResponsable}
+                    />
+                    <label>Telefono 1</label>
+                    <input
+                      type="text"
+                      name="telefono_1"
+                      defaultValue={telefono_1}
+                      onChange={handleOnChangeTelefono_1}
+                    />
+                    <label>Telefono 2</label>
+                    <input
+                      type="text"
+                      name="telefono_2"
+                      defaultValue={telefono_2}
+                      onChange={handleOnChangeTelefono_2}
+                    />
+                    <label>Email 1</label>
+                    <input
+                      type="text"
+                      name="email_1"
+                      defaultValue={email_1}
+                      onChange={handleOnChangeEmail_1}
+                    />
+                  </div>
 
-                <label>Razon Social</label>
-                <input
-                  type="text"
-                  name="razon_social"
-                  defaultValue={razonSocial}
-                  onChange={handleOnChangeRazonSocial}
-                />
+                  <div>
+                    <label>Email 2</label>
+                    <input
+                      type="text"
+                      name="email_2"
+                      defaultValue={email_2}
+                      onChange={handleOnChangeEmail_2}
+                    />
 
-                <label>CIF</label>
-                <input
-                  type="text"
-                  name="cif"
-                  defaultValue={cif}
-                  onChange={handleOnChangeCif}
-                />
+                    <label>Sector</label>
+                    <input
+                      type="text"
+                      name="sector"
+                      defaultValue={sector}
+                      onChange={handleOnChangeSector}
+                    />
 
-                <label>Direccion</label>
-                <input
-                  type="text"
-                  name="direccion"
-                  defaultValue={direccion}
-                  onChange={handleOnChangeDireccion}
-                />
+                    <label>Fuente</label>
+                    <input
+                      type="text"
+                      name="fuente"
+                      defaultValue={fuente}
+                      onChange={handleOnChangeFuente}
+                    />
 
-                <label>Responsable</label>
-                <input
-                  type="text"
-                  name="responsable"
-                  defaultValue={responsable}
-                  onChange={handleOnChangeResponsable}
-                />
+                    <label>Web</label>
+                    <input
+                      type="text"
+                      name="web"
+                      defaultValue={web}
+                      onChange={handleOnChangeWeb}
+                    />
 
-                <label>Telefono 1</label>
-                <input
-                  type="text"
-                  name="telefono_1"
-                  defaultValue={telefono_1}
-                  onChange={handleOnChangeTelefono_1}
-                />
+                    <label>Url Instagram</label>
+                    <input
+                      type="text"
+                      name="url_instagram"
+                      defaultValue={url_instagram}
+                      onChange={handleOnChangeUrl_instagram}
+                    />
 
-                <label>Telefono 2</label>
-                <input
-                  type="text"
-                  name="telefono_2"
-                  defaultValue={telefono_2}
-                  onChange={handleOnChangeTelefono_2}
-                />
+                    <label>Url Facebook</label>
+                    <input
+                      type="text"
+                      name="url_facebook"
+                      defaultValue={url_facebook}
+                      onChange={handleOnChangeUrl_facebook}
+                    />
 
-                <label>Email 1</label>
-                <input
-                  type="text"
-                  name="email_1"
-                  defaultValue={email_1}
-                  onChange={handleOnChangeEmail_1}
-                />
+                    <label>Anotaciones Hosting</label>
+                    <input
+                      type="text"
+                      name="anotaciones_hosting"
+                      defaultValue={anotaciones_hosting}
+                      onChange={handleOnChangeAnotaciones_hosting}
+                    />
 
-                <label>Email 2</label>
-                <input
-                  type="text"
-                  name="email_2"
-                  defaultValue={email_2}
-                  onChange={handleOnChangeEmail_2}
-                />
-
-                <label>Sector</label>
-                <input
-                  type="text"
-                  name="sector"
-                  defaultValue={sector}
-                  onChange={handleOnChangeSector}
-                />
-
-                <label>Fuente</label>
-                <input
-                  type="text"
-                  name="fuente"
-                  defaultValue={fuente}
-                  onChange={handleOnChangeFuente}
-                />
-
-                <label>Web</label>
-                <input
-                  type="text"
-                  name="web"
-                  defaultValue={web}
-                  onChange={handleOnChangeWeb}
-                />
-
-                <label>Url Instagram</label>
-                <input
-                  type="text"
-                  name="url_instagram"
-                  defaultValue={url_instagram}
-                  onChange={handleOnChangeUrl_instagram}
-                />
-
-                <label>Url Facebook</label>
-                <input
-                  type="text"
-                  name="url_facebook"
-                  defaultValue={url_facebook}
-                  onChange={handleOnChangeUrl_facebook}
-                />
-
-                <label>Anotaciones Hosting</label>
-                <input
-                  type="text"
-                  name="anotaciones_hosting"
-                  defaultValue={anotaciones_hosting}
-                  onChange={handleOnChangeAnotaciones_hosting}
-                />
-
-                <label>Anotaciones Cliente</label>
-                <input
-                  type="text"
-                  name="anotaciones_cliente"
-                  defaultValue={anotaciones_cliente}
-                  onChange={handleOnChangeAnotaciones_cliente}
-                />
-
-                {errorText && <span>{errorText}</span>}
+                    <label>Anotaciones Cliente</label>
+                    <input
+                      type="text"
+                      name="anotaciones_cliente"
+                      defaultValue={anotaciones_cliente}
+                      onChange={handleOnChangeAnotaciones_cliente}
+                    />
+                  </div>
+                </div>
                 <div className="modal-actions">
                   <button type="submit">GUARDAR</button>
                   <button
@@ -741,11 +769,21 @@ function Clientes({ clientes, setClientes, nivel, proyectos }) {
                     CANCELAR
                   </button>
                 </div>
+
+                {errorText && <span>{errorText}</span>}
               </form>
             </div>
           </div>
         )}
       </div>
+      {popup && (
+        <div className="popup">
+          <h2>{popupData}</h2>
+          <button className="" onClick={() => popupFunction()}>
+            ACEPTAR
+          </button>
+        </div>
+      )}
     </div>
   );
 }

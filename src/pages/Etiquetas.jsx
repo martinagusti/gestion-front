@@ -6,7 +6,11 @@ import { useNavigate } from "react-router-dom";
 import "./etiquetas.css";
 
 import { AuthContext } from "../context/AuthContext";
-import { createEtiqueta, deleteEtiqueta } from "../services";
+import {
+  createEtiqueta,
+  deleteEtiqueta,
+  getProyectosByIdEtiqueta,
+} from "../services";
 
 function Etiquetas({ etiquetas, setEtiquetas, nivel }) {
   const { setToken, setUser, token } = useContext(AuthContext);
@@ -15,6 +19,9 @@ function Etiquetas({ etiquetas, setEtiquetas, nivel }) {
   const [viewInsertEtiqueta, setViewInsertEtiqueta] = useState(false);
   const [eliminando, setEliminando] = useState(false);
   const [idDelete, setIdDelete] = useState();
+
+  const [popup, setPopup] = useState(false);
+  const [popupData, setPopupData] = useState("");
 
   const navigateTo = useNavigate();
 
@@ -42,9 +49,18 @@ function Etiquetas({ etiquetas, setEtiquetas, nivel }) {
     }
   };
 
-  const deleteEtiquetaFunction = (element) => {
-    setIdDelete(element.id);
-    setEliminando(true);
+  const deleteEtiquetaFunction = async (element) => {
+    const existe = await getProyectosByIdEtiqueta(element.id);
+    if (existe.length == 0) {
+      setIdDelete(element.id);
+      setEliminando(true);
+    } else {
+      setPopup(true);
+      setPopupData(
+        "No es posible eliminar una etiqueta con proyectos asociados"
+      );
+    }
+    console.log(existe);
   };
 
   const confirmDelete = async () => {
@@ -63,6 +79,11 @@ function Etiquetas({ etiquetas, setEtiquetas, nivel }) {
       console.log(error);
       setErrorText(error.response.data.error);
     }
+  };
+
+  const popupFunction = () => {
+    setPopup(false);
+    setPopupData("");
   };
 
   return (
@@ -157,6 +178,14 @@ function Etiquetas({ etiquetas, setEtiquetas, nivel }) {
             </div>
             {errorText && <span>{errorText}</span>}
           </div>
+        </div>
+      )}
+      {popup && (
+        <div className="popup">
+          <h2>{popupData}</h2>
+          <button className="" onClick={() => popupFunction()}>
+            ACEPTAR
+          </button>
         </div>
       )}
     </div>

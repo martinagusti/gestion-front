@@ -8,9 +8,9 @@
   align-items: center;
 }
 
-.header-container h1 {
-  margin-left: 10px;
-  color: rgb(18, 215, 235);
+.header-container h2 {
+  margin-left: 30px;
+  color: rgb(213, 63, 9);
 }
 
 .header-container div {

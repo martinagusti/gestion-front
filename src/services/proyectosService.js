@@ -16,6 +16,22 @@ export const getProyectosById = async (id) => {
   return proyectos.data;
 };
 
+export const getProyectosByIdCliente = async (id) => {
+  const proyectos = await axios.get(
+    `${import.meta.env.VITE_BACKEND_URL}/proyectos/cliente/${id}`
+  );
+
+  return proyectos.data;
+};
+
+export const getProyectosByIdEtiqueta = async (id) => {
+  const proyectos = await axios.get(
+    `${import.meta.env.VITE_BACKEND_URL}/proyectos/etiqueta/${id}`
+  );
+
+  return proyectos.data;
+};
+
 export const getProyectosByIdProyecto = async (id) => {
   const proyectos = await axios.get(
     `${import.meta.env.VITE_BACKEND_URL}/proyectos/proyectoId/${id}`

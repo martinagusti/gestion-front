@@ -3,7 +3,7 @@
   min-height: 85vh;
   background-color: rgb(20, 13, 81);
   color: white;
-  padding: 10px;
+  padding: 30px 10px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;

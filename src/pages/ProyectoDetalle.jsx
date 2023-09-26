@@ -65,7 +65,7 @@ function ProyectoDetalle({
     `${fechaEntrega.getFullYear()}-${mes}-${dia}`
   );
 
-  const [etiqueta, setEtiqueta] = useState(proyectos[0]?.etiqueta_nombre);
+  const [etiqueta, setEtiqueta] = useState(proyectos[0]?.id_etiqueta);
   const [estado, setEstado] = useState(proyectos[0]?.estado);
   const [idEdit, setIdEdit] = useState(proyectos[0]?.id);
 
@@ -88,8 +88,6 @@ function ProyectoDetalle({
         return element.id == empleado;
       });
 
-      console.log(empleadoData);
-
       created[0].nombre = empleadoData[0].nombre;
       created[0].apellido = empleadoData[0].apellido;
       created[0].nivel = empleadoData[0].nivel;
@@ -104,9 +102,6 @@ function ProyectoDetalle({
   };
 
   const deleteEmpleadoFunction = async (element) => {
-    console.log(element.id_proyecto);
-    console.log(parseInt(element.id_empleado));
-
     try {
       const deleted = await deleteEmpleadoAsignado(
         element.id_proyecto,
@@ -149,7 +144,7 @@ function ProyectoDetalle({
 
   const editar = async (event) => {
     event.preventDefault();
-    console.log(event.target);
+
     try {
       const edited = await editProyecto(
         event.target.nombre.value,
@@ -159,8 +154,6 @@ function ProyectoDetalle({
         event.target.estado.value,
         idEdit
       );
-
-      console.log(edited);
 
       setProyectos(await getProyectos());
       setEditando(false);
@@ -346,14 +339,6 @@ function ProyectoDetalle({
                 onChange={handleOnChangeNombre}
               />
 
-              <label>Comentarios</label>
-              <input
-                type="text"
-                name="comentarios"
-                defaultValue={comentarios}
-                onChange={handleOnChangeComentarios}
-              />
-
               <label>Fecha Entrega</label>
               <input
                 type="date"
@@ -367,6 +352,7 @@ function ProyectoDetalle({
                 name="etiqueta"
                 id="etiqueta"
                 onChange={handleOnChangeEtiqueta}
+                defaultValue={etiqueta}
               >
                 {etiquetas.map((element, index) => {
                   return (
@@ -387,6 +373,15 @@ function ProyectoDetalle({
                 <option value="en curso">EN CURSO</option>
                 <option value="finalizado">FINALIZADO</option>
               </select>
+
+              <label>Comentarios</label>
+              <textarea
+                className="comentarios-input"
+                type="text"
+                name="comentarios"
+                defaultValue={comentarios}
+                onChange={handleOnChangeComentarios}
+              />
 
               <div className="modal-actions">
                 <button type="submit">GUARDAR</button>

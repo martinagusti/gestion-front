@@ -11,6 +11,7 @@ import {
   deleteEmpleado,
   editEmpleado,
   getEmpleados,
+  getProyectosById,
 } from "../services";
 
 function Empleados({ empleados, setEmpleados }) {
@@ -27,6 +28,8 @@ function Empleados({ empleados, setEmpleados }) {
   const [verifyPassword, setVerifyPassword] = useState();
   const [idEdit, setIdEdit] = useState("");
   const [idDelete, setIdDelete] = useState();
+  const [popup, setPopup] = useState(false);
+  const [popupData, setPopupData] = useState("");
 
   const navigateTo = useNavigate();
 
@@ -41,7 +44,7 @@ function Empleados({ empleados, setEmpleados }) {
 
   const onSubmit = async (data, e) => {
     e.preventDefault();
-    console.log(data);
+
     const { nombre, apellido, email, password, verifyPassword, nivel } = data;
 
     try {
@@ -75,9 +78,22 @@ function Empleados({ empleados, setEmpleados }) {
     setIdEdit(element.id);
   };
 
-  const deleteEmpleadoFunction = (element) => {
-    setIdDelete(element.id);
-    setEliminando(true);
+  const deleteEmpleadoFunction = async (element) => {
+    try {
+      const data = await getProyectosById(element.id);
+      if (data.length == 0) {
+        setIdDelete(element.id);
+        setEliminando(true);
+      } else {
+        setPopup(true);
+        setPopupData(
+          "No es posible eliminar un usuario con proyectos asociados"
+        );
+      }
+    } catch (error) {
+      console.log(error);
+      setErrorText(error.response.data.error);
+    }
   };
 
   const confirmDelete = async () => {
@@ -139,6 +155,11 @@ function Empleados({ empleados, setEmpleados }) {
 
   const handleOnChangeVerifyPassword = (e) => {
     setVerifyPassword(e.target.value);
+  };
+
+  const popupFunction = () => {
+    setPopup(false);
+    setPopupData("");
   };
 
   return (
@@ -259,7 +280,7 @@ function Empleados({ empleados, setEmpleados }) {
         <div className="modal-container">
           <div className="modal">
             <form
-              className="form-edit-container"
+              className="form-container"
               onSubmit={(event) => {
                 editar(event);
               }}
@@ -386,6 +407,14 @@ function Empleados({ empleados, setEmpleados }) {
           </tbody>
         </table>
       </div>
+      {popup && (
+        <div className="popup">
+          <h2>{popupData}</h2>
+          <button className="" onClick={() => popupFunction()}>
+            ACEPTAR
+          </button>
+        </div>
+      )}
     </div>
   );
 }

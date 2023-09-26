@@ -12,7 +12,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 20px;
+  gap: 10px;
   margin-top: 10px;
 }
 
@@ -59,6 +59,7 @@
 .content-table th,
 .content-table td {
   padding: 6px 10px;
+  min-width: 100px;
 }
 
 .content-table tbody tr {
@@ -158,6 +159,12 @@
   margin-top: 10px;
 }
 
+.form-edit-container select {
+  padding: 5px 10px;
+  border-radius: 10px;
+  border: 1px solid;
+}
+
 .btn-insertar-container {
   width: 90%;
   height: 50px;
@@ -194,4 +201,45 @@
   align-items: center;
   padding: 20px 20px;
   border-radius: 10px;
+}
+
+.modal-actions button {
+  padding: 5px 10px;
+  border-radius: 10px;
+  border: 1px solid white;
+  margin-top: 10px;
+  background-color: rgb(182, 25, 25);
+  color: white;
+  margin-right: 10px;
+}
+
+.modal {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: blue;
+  position: absolute;
+  padding: 10px 10px;
+  top: 200px;
+  color: white;
+  border-radius: 10px;
+}
+
+.popup button {
+  padding: 5px 10px;
+  border-radius: 10px;
+  border: 1px solid white;
+  margin-top: 10px;
+  background-color: rgb(182, 25, 25);
+  color: white;
+  margin-right: 10px;
+  margin-bottom: 10px;
 }

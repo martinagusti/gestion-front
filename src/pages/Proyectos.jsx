@@ -42,6 +42,8 @@ function Proyectos({
     );
   });
 
+  console.log(proyectos);
+
   const getProyectosByIdFunction = async (event) => {
     if (event.target.value !== "") {
       const data = await getProyectosById(event.target.value);
@@ -70,28 +72,21 @@ function Proyectos({
 
   const filterEtiquetas = async (e) => {
     e.preventDefault();
-    console.log(e.target.value);
 
     if (e.target.value == "") {
-      console.log("entre1");
       const data = await getProyectos();
       setProyectos(data);
     } else {
-      console.log("entre2");
       const data = await getProyectos();
       const filtered = data.filter((element) => {
         return element.etiqueta_nombre === e.target.value;
       });
-      console.log(filtered);
+
       setProyectos(filtered);
     }
   };
 
-  console.log(proyectos);
-
   const filterClientes = async () => {
-    console.log(search);
-
     const allProyectos = await getProyectos();
     const filtered = allProyectos.filter((element) => {
       return element.cliente_nombre
@@ -114,7 +109,7 @@ function Proyectos({
 
   const onSubmit = async (data, e) => {
     e.preventDefault();
-    console.log(data);
+
     const {
       nombre,
       cliente,
@@ -133,8 +128,6 @@ function Proyectos({
         fecha_entrega,
         etiqueta
       );
-
-      console.log(created);
 
       let etiqueta_nombre = etiquetas.filter((element) => {
         return element.id == etiqueta;
@@ -192,13 +185,22 @@ function Proyectos({
     setSearch(e.target.value);
   };
 
+  const nuevaEtiqueta = () => {
+    console.log("nueva");
+  };
+
   return (
     <div className="proyectos-container">
-      {nivel !== "empleado" && (
-        <button onClick={() => setViewInsertProyecto(true)}>
-          NUEVO PROYECTO
-        </button>
-      )}
+      <div className="btn-insertar-container">
+        {nivel !== "empleado" && (
+          <button
+            className="btn-insertar"
+            onClick={() => setViewInsertProyecto(true)}
+          >
+            NUEVO
+          </button>
+        )}
+      </div>
 
       {nivel !== "empleado" && (
         <div className="filtros-proyecto">
@@ -279,32 +281,32 @@ function Proyectos({
         </div>
       )}
 
-      <h1>{`${proyectos.length} Proyectos encontrados`}</h1>
-
       <div className="contenedor-proyectos">
         {proyectos.map((element, index) => {
           const date = new Date(element.fecha_entrega);
           return (
-            <div className="proyectos-box" key={index}>
-              <div
-                onClick={async () => {
-                  setIdProyecto(element.id);
-                  navigateTo("/proyectoDetalle");
-                  setEmpleadosAsignados(
-                    await getProyectosByIdProyecto(element.id)
-                  );
-                }}
-              >
-                <label>Nombre Cliente</label>
-                <h1>{element.nombre}</h1>
-                <label>Cliente</label>
-                <h1>{element.cliente_nombre}</h1>
-                <label>Etiqueta</label>
-                <h1>{element.etiqueta_nombre}</h1>
+            <div
+              className={
+                element.estado == "finalizado" ? "finalizado" : "proyectos-box"
+              }
+              key={index}
+              onClick={async () => {
+                setIdProyecto(element.id);
+                navigateTo("/proyectoDetalle");
+                setEmpleadosAsignados(
+                  await getProyectosByIdProyecto(element.id)
+                );
+              }}
+            >
+              <div className="elementos-box">
+                <label className="proyecto-nombre">{element.nombre}</label>
+
+                <label>CLiente: {element.cliente_nombre}</label>
+                <label>{element.etiqueta_nombre}</label>
                 <label>Fecha Entrega</label>
-                <h1>{`${date.getDate()}/${
+                <label>{`${date.getDate()}/${
                   date.getMonth() + 1
-                }/${date.getFullYear()}`}</h1>
+                }/${date.getFullYear()}`}</label>
               </div>
             </div>
           );
@@ -314,7 +316,7 @@ function Proyectos({
         <div className="empleado-create-modal-container">
           <div className="empleado-create-modal">
             <form
-              className="empleado-form-container"
+              className="form-container"
               method="post"
               onSubmit={handleSubmit(onSubmit)}
             >
@@ -353,36 +355,28 @@ function Proyectos({
               )}
 
               <label>Etiqueta</label>
-              <select
-                name="etiqueta"
-                id="etiqueta"
-                {...register("etiqueta", {
-                  required: true,
-                })}
-              >
-                {etiquetas.map((element, index) => {
-                  return (
-                    <option key={index} value={element.id}>
-                      {element.nombre}
-                    </option>
-                  );
-                })}
-              </select>
+              <div>
+                <select
+                  name="etiqueta"
+                  id="etiqueta"
+                  {...register("etiqueta", {
+                    required: true,
+                  })}
+                >
+                  {etiquetas.map((element, index) => {
+                    return (
+                      <option key={index} value={element.id}>
+                        {element.nombre}
+                      </option>
+                    );
+                  })}
+                </select>
+                <button type="button" onClick={() => nuevaEtiqueta()}>
+                  +
+                </button>
+              </div>
 
               {errors.etiqueta?.type === "required" && (
-                <span>Campo requerido</span>
-              )}
-
-              <label>Comentarios</label>
-              <input
-                type="text"
-                id="comentarios"
-                placeholder="Comentarios"
-                {...register("comentarios", {
-                  required: true,
-                })}
-              />
-              {errors.comentarios?.type === "required" && (
                 <span>Campo requerido</span>
               )}
 
@@ -407,6 +401,19 @@ function Proyectos({
                 })}
               />
               {errors.fecha_entrega?.type === "required" && (
+                <span>Campo requerido</span>
+              )}
+
+              <label>Comentarios</label>
+              <textarea
+                id="comentarios"
+                placeholder="Comentarios"
+                className="comentarios-input"
+                {...register("comentarios", {
+                  required: true,
+                })}
+              />
+              {errors.comentarios?.type === "required" && (
                 <span>Campo requerido</span>
               )}
 
