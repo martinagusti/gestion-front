@@ -93,6 +93,7 @@ function App() {
             path="/proyectoDetalle"
             element={
               <ProyectoDetalle
+                setTareas={setTareas}
                 tareas={tareas}
                 proyectos={proyectos}
                 setProyectos={setProyectos}

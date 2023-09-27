@@ -5,3 +5,39 @@ export const getTareas = async () => {
 
   return tareas.data;
 };
+
+export const createTarea = async (
+  id_proyecto,
+  id_empleado,
+  titulo,
+  descripcion,
+  fecha_inicio,
+  fecha_final,
+  prioridad,
+  estado
+) => {
+  const tarea = await axios.post(
+    `${import.meta.env.VITE_BACKEND_URL}/tareas/create`,
+    {
+      id_proyecto,
+      id_empleado,
+      titulo,
+      descripcion,
+      estado,
+      prioridad,
+      archivo: "",
+      fecha_comienzo: fecha_inicio,
+      fecha_final: fecha_final,
+    }
+  );
+
+  return tarea.data;
+};
+
+export const deleteTarea = async (id) => {
+  const tarea = await axios.delete(
+    `${import.meta.env.VITE_BACKEND_URL}/tareas/delete/${id}`
+  );
+
+  return tarea.data;
+};

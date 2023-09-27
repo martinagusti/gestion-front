@@ -6,7 +6,11 @@ import { useNavigate } from "react-router-dom";
 import "./proyectoDetalle.css";
 
 import { AuthContext } from "../context/AuthContext";
-import { getProyectosByIdProyecto } from "../services";
+import {
+  createTarea,
+  deleteTarea,
+  getProyectosByIdProyecto,
+} from "../services";
 import {
   createEmpleadoAsignado,
   deleteEmpleadoAsignado,
@@ -26,6 +30,7 @@ function ProyectoDetalle({
   etiquetas,
   incidencias,
   tareas,
+  setTareas,
 }) {
   const { setToken, setUser, token } = useContext(AuthContext);
   const [errorText, setErrorText] = useState();
@@ -33,13 +38,15 @@ function ProyectoDetalle({
   const [viewDeleteProyecto, setViewDeleteProyecto] = useState(false);
   const [editando, setEditando] = useState(false);
 
+  const [viewInsertTarea, setViewInsertTarea] = useState(false);
+  const [viewDeleteTarea, setViewDeleteTarea] = useState(false);
+  const [deleteTareaId, setDeleteTareaId] = useState(null);
+
   const navigateTo = useNavigate();
 
   tareas = tareas.filter((element) => {
     return element.id_proyecto == idProyecto;
   });
-
-  console.log(tareas);
 
   incidencias = incidencias.filter((element) => {
     return element.id_proyecto == idProyecto;
@@ -76,13 +83,24 @@ function ProyectoDetalle({
     reset,
   } = useForm();
 
+  const {
+    register: register2,
+    handleSubmit: handleSubmit2,
+    formState: { errors: errors2 },
+    reset: reset2,
+  } = useForm();
+
   const onSubmit = async (data, e) => {
     e.preventDefault();
 
+    console.log(data);
     const { empleado } = data;
 
     try {
-      const created = await createEmpleadoAsignado(idProyecto, empleado);
+      const created = await createEmpleadoAsignado(
+        idProyecto,
+        parseInt(empleado)
+      );
 
       let empleadoData = empleados.filter((element) => {
         return element.id == empleado;
@@ -92,9 +110,60 @@ function ProyectoDetalle({
       created[0].apellido = empleadoData[0].apellido;
       created[0].nivel = empleadoData[0].nivel;
 
+      console.log(empleadosAsignados);
+
+      console.log(created[0]);
+
       setEmpleadosAsignados([created[0], ...empleadosAsignados]);
       reset();
       setViewInsertEmpleado(false);
+    } catch (error) {
+      console.log(error);
+      setErrorText(error.response.data.error);
+    }
+  };
+
+  const onSubmit2 = async (data, e) => {
+    e.preventDefault();
+
+    console.log(data);
+
+    const {
+      titulo,
+      descripcion,
+      empleado2,
+      fecha_inicio,
+      fecha_final,
+      prioridad,
+      estado,
+    } = data;
+
+    try {
+      const created = await createTarea(
+        idProyecto,
+        empleado2,
+        titulo,
+        descripcion,
+        fecha_inicio,
+        fecha_final,
+        prioridad,
+        estado
+      );
+
+      const empleadoData = empleados.filter((element) => {
+        return element.id == empleado2;
+      });
+      console.log(empleadoData);
+
+      created[0].nombre = empleadoData[0].nombre;
+      created[0].apellido = empleadoData[0].apellido;
+
+      console.log(created);
+
+      setTareas([created[0], ...tareas]);
+      reset2();
+      setViewInsertTarea(false);
+      setErrorText(null);
     } catch (error) {
       console.log(error);
       setErrorText(error.response.data.error);
@@ -140,6 +209,33 @@ function ProyectoDetalle({
 
   const editarProyecto = () => {
     setEditando(true);
+  };
+
+  const viewDeleteTareaFunction = (element) => {
+    setDeleteTareaId(element.id);
+    setViewDeleteTarea(true);
+  };
+
+  const deleteTareaFunction = async () => {
+    try {
+      const deleted = await deleteTarea(deleteTareaId);
+
+      if (deleted) {
+        setTareas(
+          tareas.filter((element) => {
+            return element.id != deleteTareaId;
+          })
+        );
+        setErrorText(null);
+        setViewDeleteTarea(false);
+      }
+
+      setViewDeleteTarea(false);
+      setErrorText(null);
+    } catch (error) {
+      console.log(error);
+      setErrorText(error.response.data.error);
+    }
   };
 
   const editar = async (event) => {
@@ -191,7 +287,7 @@ function ProyectoDetalle({
         const fechaEntrega = new Date(element.fecha_entrega);
 
         return (
-          <div key={index}>
+          <div key={index} className="detalle-container">
             <h2>{element.nombre}</h2>
             <h2>{element.cliente_nombre}</h2>
             <h2>{element.etiqueta_nombre}</h2>
@@ -203,53 +299,56 @@ function ProyectoDetalle({
             <h2>{`${fechaEntrega.getDate()}/${
               fechaEntrega.getMonth() + 1
             }/${fechaEntrega.getFullYear()}`}</h2>
-            {nivel !== "empleado" && (
-              <div className="box-table-content">
-                <button onClick={() => editarProyecto()}>
-                  EDITAR PROYECTO
-                </button>
-                <button onClick={() => deleteProyectoFunction()}>
-                  ELIMINAR PROYECTO
-                </button>
-                <label>Empleados Asignados al Proyecto</label>
-
-                <table className="content-table">
-                  <thead>
-                    <tr>
-                      <th>Nombre</th>
-                      <th>Apellidos</th>
-                      <th>Nivel</th>
-                      <th>Acciones</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {empleadosAsignados?.map((element, index) => {
-                      return (
-                        <tr key={index}>
-                          <td>{element.nombre}</td>
-                          <td>{element.apellido}</td>
-                          <td>{element.nivel}</td>
-
-                          <td>
-                            <button
-                              onClick={() => deleteEmpleadoFunction(element)}
-                              className="empleados-btn-eliminar"
-                            ></button>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-                <button onClick={() => setViewInsertEmpleado(true)}>
-                  AGREGAR
-                </button>
-              </div>
-            )}
           </div>
         );
       })}
+      {nivel !== "empleado" && (
+        <div className="box-table-content">
+          <button onClick={() => editarProyecto()}>EDITAR PROYECTO</button>
+          <button onClick={() => deleteProyectoFunction()}>
+            ELIMINAR PROYECTO
+          </button>
+          <label>Empleados Asignados al Proyecto</label>
+
+          <table className="content-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Apellidos</th>
+                <th>Nivel</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {empleadosAsignados?.map((element, index) => {
+                return (
+                  <tr key={index}>
+                    <td>{element.nombre}</td>
+                    <td>{element.apellido}</td>
+                    <td>{element.nivel}</td>
+
+                    <td>
+                      <button
+                        onClick={() => deleteEmpleadoFunction(element)}
+                        className="empleados-btn-eliminar"
+                      ></button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          <button
+            onClick={() => {
+              setViewInsertEmpleado(true);
+              setErrorText(null);
+            }}
+          >
+            AGREGAR
+          </button>
+        </div>
+      )}
       {viewInsertEmpleado && (
         <div className="etiqueta-create-modal-container">
           <div className="etiqueta-create-modal">
@@ -401,32 +500,69 @@ function ProyectoDetalle({
       )}
 
       <h2>Tareas</h2>
-
+      <button type="button" onClick={() => setViewInsertTarea(true)}>
+        NUEVA TAREA
+      </button>
       <table className="content-table">
         <thead>
           <tr>
             <th>Titulo</th>
             <th>Descripcion</th>
-            <th>Estado</th>
-            <th>Empleado Id</th>
+            <th>Empleado</th>
+            <th>Fecha Inicio</th>
+            <th>Fecha Final</th>
             <th>Prioridad</th>
+            <th>Estado</th>
+            <th>Archivo</th>
             <th>Acciones</th>
           </tr>
         </thead>
 
         <tbody>
           {tareas?.map((element, index) => {
+            const fechaComienzo = new Date(element.fecha_comienzo);
+            const fechaFinal = new Date(element.fecha_final);
             return (
               <tr key={index}>
                 <td>{element.titulo}</td>
                 <td>{element.descripcion}</td>
-                <td>{element.estado}</td>
-                <td>{element.id_empleado}</td>
-                <td>{element.prioridad}</td>
-
                 <td>
+                  {element.nombre} {element.apellido}
+                </td>
+                <th>{`${fechaComienzo.getDate()}/${
+                  fechaComienzo.getMonth() + 1
+                }/${fechaComienzo.getFullYear()}`}</th>
+                <th>{`${fechaFinal.getDate()}/${
+                  fechaFinal.getMonth() + 1
+                }/${fechaFinal.getFullYear()}`}</th>
+
+                <td>{element.prioridad}</td>
+                <td>{element.estado}</td>
+                <td>
+                  {
+                    /* {element.document} */ <a
+                      href={`${import.meta.env.VITE_BACKEND_URL}/incomeFiles/${
+                        element.document
+                      }`}
+                      target="_blank"
+                      download="archivo.txt"
+                    >
+                      {element.archivo}
+                    </a>
+                  }
+                </td>
+
+                <td className="actions-btn-container">
                   <button
-                    onClick={() => deleteEmpleadoFunction(element)}
+                    onClick={() => console.log("Subir Archivo funcion")}
+                    className="btn-archivo"
+                  ></button>
+                  <button
+                    onClick={() => console.log("Editar funcion")}
+                    className="empleados-btn-editar"
+                  ></button>
+                  <button
+                    onClick={() => viewDeleteTareaFunction(element)}
                     className="empleados-btn-eliminar"
                   ></button>
                 </td>
@@ -435,6 +571,142 @@ function ProyectoDetalle({
           })}
         </tbody>
       </table>
+
+      {viewInsertTarea && (
+        <div className="modal-container">
+          <div className="modal">
+            <form
+              className="form-container"
+              method="get"
+              onSubmit={handleSubmit2(onSubmit2)}
+            >
+              <input
+                type="text"
+                id="titulo"
+                placeholder="Titulo"
+                {...register2("titulo", {
+                  required: true,
+                })}
+              />
+              {errors2.titulo?.type === "required" && (
+                <span>Campo requerido</span>
+              )}
+
+              <textarea
+                className="descripcion-input"
+                id="descripcion"
+                placeholder="Descripcion"
+                {...register2("descripcion", {
+                  required: true,
+                })}
+              />
+              {errors2.descripcion?.type === "required" && (
+                <span>Campo requerido</span>
+              )}
+              <label>Responsable</label>
+              <select
+                name="empleado2"
+                id="empleado2"
+                {...register2("empleado2", {
+                  required: true,
+                })}
+              >
+                {empleadosAsignados.map((element, index) => {
+                  console.log(empleadosAsignados);
+                  return (
+                    <option key={index} value={element.id_empleado}>
+                      {element.nombre} {element.apellido}
+                    </option>
+                  );
+                })}
+              </select>
+
+              {errors2.empleado2?.type === "required" && (
+                <span>Campo requerido</span>
+              )}
+              <label>Fecha Inicio</label>
+              <input
+                type="date"
+                id="fecha_inicio"
+                {...register2("fecha_inicio", {
+                  required: true,
+                })}
+              />
+              {errors2.fecha_inicio?.type === "required" && (
+                <span>Campo requerido</span>
+              )}
+              <label>Fecha Final</label>
+              <input
+                type="date"
+                id="fecha_final"
+                {...register2("fecha_final", {
+                  required: true,
+                })}
+              />
+              {errors2.fecha_final?.type === "required" && (
+                <span>Campo requerido</span>
+              )}
+              <label>Prioridad</label>
+              <select
+                name="prioridad"
+                id="prioridad"
+                {...register2("prioridad", {
+                  required: true,
+                })}
+              >
+                <option value="normal">Normal</option>
+                <option value="baja">Baja</option>
+                <option value="alta">Alta</option>
+              </select>
+              <label>Estado</label>
+              <select
+                name="estado"
+                id="estado"
+                {...register2("estado", {
+                  required: true,
+                })}
+              >
+                <option value="pendiente">Pendiente</option>
+                <option value="en proceso">En Proceso</option>
+                <option value="resuelta">Resuelta</option>
+              </select>
+
+              <div className="modal-actions">
+                <button type="submit">AGREGAR</button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setViewInsertTarea(false);
+                    setErrorText(null);
+                    reset2();
+                  }}
+                >
+                  CANCELAR
+                </button>
+              </div>
+              {errorText && <span>{errorText}</span>}
+            </form>
+          </div>
+        </div>
+      )}
+
+      {viewDeleteTarea && (
+        <div className="delete-modal-container">
+          <div className="delete-modal">
+            <h2>¿Seguro desea eliminar esta tarea?</h2>
+            <div className="modal-actions">
+              <button onClick={() => deleteTareaFunction()}>ACEPTAR</button>
+              <button
+                onClick={() => {
+                  setViewDeleteTarea(false);
+                }}
+              >
+                CANCELAR
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
