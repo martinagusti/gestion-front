@@ -30,7 +30,13 @@ import {
 
 import { getIncidencias, createIncidencia } from "./incidenciasService";
 
-import { getTareas, createTarea, deleteTarea } from "./tareasService";
+import {
+  getTareas,
+  createTarea,
+  deleteTarea,
+  getArchivos,
+  deleteTareaArchivo,
+} from "./tareasService";
 
 const isBearerTokenRequired = (url) => {
   const parsedUrl = new URL(url);
@@ -104,4 +110,6 @@ export {
   getTareas,
   createTarea,
   deleteTarea,
+  getArchivos,
+  deleteTareaArchivo,
 };

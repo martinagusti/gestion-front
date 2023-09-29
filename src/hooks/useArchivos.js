@@ -1,12 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { getArchivos, getTareas } from "../services/tareasService";
+import { getArchivos } from "../services/tareasService";
 
-const useTareas = () => {
+const useArchivos = () => {
   const { setToken, setUser, token } = useContext(AuthContext);
 
-  const [tareas, setTareas] = useState([]);
+  const [archivos, setArchivos] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -15,12 +15,12 @@ const useTareas = () => {
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("gestionUser"));
     if (user) {
-      const loadTareas = async () => {
+      const loadArchivos = async () => {
         try {
           setLoading(true);
-          const data = await getTareas();
+          const data = await getArchivos();
 
-          setTareas(data);
+          setArchivos(data);
         } catch (error) {
           console.log(error);
           setError(error.message);
@@ -28,16 +28,16 @@ const useTareas = () => {
           setLoading(false);
         }
       };
-      loadTareas();
+      loadArchivos();
     }
   }, [token]);
 
   return {
-    tareas,
-    setTareas,
+    archivos,
+    setArchivos,
     loading,
     error,
   };
 };
 
-export default useTareas;
+export default useArchivos;

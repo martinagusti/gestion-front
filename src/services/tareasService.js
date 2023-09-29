@@ -6,6 +6,14 @@ export const getTareas = async () => {
   return tareas.data;
 };
 
+export const getArchivos = async () => {
+  const archivos = await axios.get(
+    `${import.meta.env.VITE_BACKEND_URL}/tareas/archivos`
+  );
+
+  return archivos.data;
+};
+
 export const createTarea = async (
   id_proyecto,
   id_empleado,
@@ -40,4 +48,12 @@ export const deleteTarea = async (id) => {
   );
 
   return tarea.data;
+};
+
+export const deleteTareaArchivo = async (id) => {
+  const archivo = await axios.delete(
+    `${import.meta.env.VITE_BACKEND_URL}/tareas/archivo/delete/${id}`
+  );
+
+  return archivo.data;
 };

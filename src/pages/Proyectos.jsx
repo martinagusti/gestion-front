@@ -42,8 +42,6 @@ function Proyectos({
     );
   });
 
-  console.log(proyectos);
-
   const getProyectosByIdFunction = async (event) => {
     if (event.target.value !== "") {
       const data = await getProyectosById(event.target.value);

@@ -9,6 +9,8 @@ import { AuthContext } from "../context/AuthContext";
 import {
   createTarea,
   deleteTarea,
+  deleteTareaArchivo,
+  getArchivos,
   getProyectosByIdProyecto,
 } from "../services";
 import {
@@ -31,6 +33,8 @@ function ProyectoDetalle({
   incidencias,
   tareas,
   setTareas,
+  archivos,
+  setArchivos,
 }) {
   const { setToken, setUser, token } = useContext(AuthContext);
   const [errorText, setErrorText] = useState();
@@ -41,6 +45,9 @@ function ProyectoDetalle({
   const [viewInsertTarea, setViewInsertTarea] = useState(false);
   const [viewDeleteTarea, setViewDeleteTarea] = useState(false);
   const [deleteTareaId, setDeleteTareaId] = useState(null);
+  const [viewFileModal, setViewFileModal] = useState(false);
+  const [fileName, setFileName] = useState("");
+  const [fileId, setFileId] = useState();
 
   const navigateTo = useNavigate();
 
@@ -93,7 +100,6 @@ function ProyectoDetalle({
   const onSubmit = async (data, e) => {
     e.preventDefault();
 
-    console.log(data);
     const { empleado } = data;
 
     try {
@@ -110,10 +116,6 @@ function ProyectoDetalle({
       created[0].apellido = empleadoData[0].apellido;
       created[0].nivel = empleadoData[0].nivel;
 
-      console.log(empleadosAsignados);
-
-      console.log(created[0]);
-
       setEmpleadosAsignados([created[0], ...empleadosAsignados]);
       reset();
       setViewInsertEmpleado(false);
@@ -125,8 +127,6 @@ function ProyectoDetalle({
 
   const onSubmit2 = async (data, e) => {
     e.preventDefault();
-
-    console.log(data);
 
     const {
       titulo,
@@ -153,12 +153,9 @@ function ProyectoDetalle({
       const empleadoData = empleados.filter((element) => {
         return element.id == empleado2;
       });
-      console.log(empleadoData);
 
       created[0].nombre = empleadoData[0].nombre;
       created[0].apellido = empleadoData[0].apellido;
-
-      console.log(created);
 
       setTareas([created[0], ...tareas]);
       reset2();
@@ -181,7 +178,6 @@ function ProyectoDetalle({
           return empleado.id_empleado != element.id_empleado;
         })
       );
-      console.log(deleted);
     } catch (error) {
       console.log(error);
       setErrorText(error.response.data.error);
@@ -280,6 +276,49 @@ function ProyectoDetalle({
     setEstado(e.target.value);
   };
 
+  const handleOnChangeFileName = (e) => {
+    setFileName(e.target.value);
+  };
+
+  const cargarArchivo = async () => {
+    const date = new Date();
+
+    setTimeout(async () => {
+      const archivos = await getArchivos();
+
+      setArchivos(archivos);
+    }, 1000);
+
+    /* const arr = fileName.split("\\");
+
+    setTareas(
+      tareas.map((element) => {
+        if (element.id === fileId) {
+          element.archivo = `${date.getDate()}${
+            date.getMonth() + 1
+          }${date.getFullYear()}${arr[arr.length - 1]}`;
+        }
+        return element;
+      })
+    ); */
+  };
+
+  const deleteArchivo = async (element) => {
+    try {
+      const deleted = await deleteTareaArchivo(element.id);
+      if (deleted) {
+        setArchivos(
+          archivos.filter((archivo) => {
+            return archivo.id !== element.id;
+          })
+        );
+      }
+    } catch (error) {
+      console.log(error);
+      setErrorText(error.response.data.error);
+    }
+  };
+
   return (
     <div className="proyectoDetalle-container">
       {proyectos.map((element, index) => {
@@ -350,10 +389,10 @@ function ProyectoDetalle({
         </div>
       )}
       {viewInsertEmpleado && (
-        <div className="etiqueta-create-modal-container">
-          <div className="etiqueta-create-modal">
+        <div className="modal-container">
+          <div className="modal">
             <form
-              className="etiqueta-form-container"
+              className="form-edit-container"
               method="post"
               onSubmit={handleSubmit(onSubmit)}
             >
@@ -499,10 +538,16 @@ function ProyectoDetalle({
         </div>
       )}
 
-      <h2>Tareas</h2>
-      <button type="button" onClick={() => setViewInsertTarea(true)}>
-        NUEVA TAREA
-      </button>
+      <h2>
+        Tareas (filtros por empleado, prioridad, estado, ordenar por fecha
+        final)
+      </h2>
+      {nivel !== "empleado" && (
+        <button type="button" onClick={() => setViewInsertTarea(true)}>
+          NUEVA TAREA
+        </button>
+      )}
+
       <table className="content-table">
         <thead>
           <tr>
@@ -513,7 +558,6 @@ function ProyectoDetalle({
             <th>Fecha Final</th>
             <th>Prioridad</th>
             <th>Estado</th>
-            <th>Archivo</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -538,33 +582,25 @@ function ProyectoDetalle({
 
                 <td>{element.prioridad}</td>
                 <td>{element.estado}</td>
-                <td>
-                  {
-                    /* {element.document} */ <a
-                      href={`${import.meta.env.VITE_BACKEND_URL}/incomeFiles/${
-                        element.document
-                      }`}
-                      target="_blank"
-                      download="archivo.txt"
-                    >
-                      {element.archivo}
-                    </a>
-                  }
-                </td>
 
                 <td className="actions-btn-container">
                   <button
-                    onClick={() => console.log("Subir Archivo funcion")}
+                    onClick={() => {
+                      setViewFileModal(true);
+                      setFileId(element.id);
+                    }}
                     className="btn-archivo"
                   ></button>
                   <button
                     onClick={() => console.log("Editar funcion")}
                     className="empleados-btn-editar"
                   ></button>
-                  <button
-                    onClick={() => viewDeleteTareaFunction(element)}
-                    className="empleados-btn-eliminar"
-                  ></button>
+                  {nivel !== "empleado" && (
+                    <button
+                      onClick={() => viewDeleteTareaFunction(element)}
+                      className="empleados-btn-eliminar"
+                    ></button>
+                  )}
                 </td>
               </tr>
             );
@@ -612,7 +648,6 @@ function ProyectoDetalle({
                 })}
               >
                 {empleadosAsignados.map((element, index) => {
-                  console.log(empleadosAsignados);
                   return (
                     <option key={index} value={element.id_empleado}>
                       {element.nombre} {element.apellido}
@@ -704,6 +739,75 @@ function ProyectoDetalle({
                 CANCELAR
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {viewFileModal && (
+        <div className="modal-container">
+          <div className="modal">
+            <div className="archivos-container">
+              {archivos
+                .filter((element) => {
+                  return element.id_tarea == fileId;
+                })
+                .map((element, index) => {
+                  return (
+                    <div key={index} className="archivos">
+                      <a
+                        href={`${
+                          import.meta.env.VITE_BACKEND_URL
+                        }/tareasFiles/${element.nombre}`}
+                        target="_blank"
+                        download="archivo.txt"
+                      >
+                        {element.nombre}
+                      </a>
+                      {nivel !== "empleado" && (
+                        <button
+                          className="empleados-btn-eliminar"
+                          onClick={() => deleteArchivo(element)}
+                        ></button>
+                      )}
+                    </div>
+                  );
+                })}
+            </div>
+
+            <form
+              onSubmit={() => cargarArchivo()}
+              action={`${
+                import.meta.env.VITE_BACKEND_URL
+              }/tareas/files/${fileId}`}
+              target="_blank"
+              method="post"
+              encType="multipart/form-data"
+              className="form-edit-container"
+            >
+              {nivel !== "empleado" && (
+                <input
+                  type="file"
+                  name="file"
+                  id=""
+                  /* defaultValue={fileName} */
+                  onChange={handleOnChangeFileName}
+                  multiple
+                />
+              )}
+              {errorText && <span>{errorText}</span>}
+              <div className="modal-actions">
+                {nivel !== "empleado" && <button type="submit">ENVIAR</button>}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setViewFileModal(false);
+                    setErrorText(null);
+                  }}
+                >
+                  SALIR
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
