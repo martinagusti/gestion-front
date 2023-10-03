@@ -26,6 +26,8 @@ import {
   deleteEmpleadoAsignado,
   deleteProyecto,
   editProyecto,
+  getProyectoArchivos,
+  deleteProyectoArchivo,
 } from "./proyectosService";
 
 import { getIncidencias, createIncidencia } from "./incidenciasService";
@@ -36,6 +38,7 @@ import {
   deleteTarea,
   getArchivos,
   deleteTareaArchivo,
+  editTarea,
 } from "./tareasService";
 
 const isBearerTokenRequired = (url) => {
@@ -110,6 +113,9 @@ export {
   getTareas,
   createTarea,
   deleteTarea,
+  editTarea,
   getArchivos,
   deleteTareaArchivo,
+  getProyectoArchivos,
+  deleteProyectoArchivo,
 };

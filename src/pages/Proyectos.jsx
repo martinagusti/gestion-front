@@ -29,6 +29,7 @@ function Proyectos({
   const { setToken, setUser, token } = useContext(AuthContext);
   const [errorText, setErrorText] = useState();
   const [viewInsertProyecto, setViewInsertProyecto] = useState(false);
+  const [vista, setVista] = useState("tabla");
 
   const [desde, setDesde] = useState();
   const [hasta, setHasta] = useState();
@@ -199,7 +200,18 @@ function Proyectos({
           </button>
         )}
       </div>
-
+      <div className="vistas-btn">
+        {vista == "post-it" && (
+          <button className="btn-insertar" onClick={() => setVista("tabla")}>
+            VISTA TABLA
+          </button>
+        )}
+        {vista == "tabla" && (
+          <button className="btn-insertar" onClick={() => setVista("post-it")}>
+            VISTA POST-IT
+          </button>
+        )}
+      </div>
       {nivel !== "empleado" && (
         <div className="filtros-proyecto">
           <form
@@ -256,6 +268,7 @@ function Proyectos({
               onChange={(event) => getProyectosByEstado(event)}
             >
               <option value={""}>TODOS</option>
+              <option value={"pendiente"}>PENDIENTE</option>
               <option value={"en curso"}>EN CURSO</option>
               <option value={"finalizado"}>FINALIZADO</option>
             </select>
@@ -279,37 +292,94 @@ function Proyectos({
         </div>
       )}
 
-      <div className="contenedor-proyectos">
-        {proyectos.map((element, index) => {
-          const date = new Date(element.fecha_entrega);
-          return (
-            <div
-              className={
-                element.estado == "finalizado" ? "finalizado" : "proyectos-box"
-              }
-              key={index}
-              onClick={async () => {
-                setIdProyecto(element.id);
-                navigateTo("/proyectoDetalle");
-                setEmpleadosAsignados(
-                  await getProyectosByIdProyecto(element.id)
-                );
-              }}
-            >
-              <div className="elementos-box">
-                <label className="proyecto-nombre">{element.nombre}</label>
+      {vista == "post-it" && (
+        <div className="contenedor-proyectos">
+          {proyectos.map((element, index) => {
+            const date = new Date(element.fecha_entrega);
+            return (
+              <div
+                className={
+                  element.estado == "finalizado"
+                    ? "finalizado"
+                    : "proyectos-box"
+                }
+                key={index}
+                onClick={async () => {
+                  setIdProyecto(element.id);
+                  navigateTo("/proyectoDetalle");
+                  setEmpleadosAsignados(
+                    await getProyectosByIdProyecto(element.id)
+                  );
+                }}
+              >
+                <div className="elementos-box">
+                  <label className="proyecto-nombre">{element.nombre}</label>
 
-                <label>CLiente: {element.cliente_nombre}</label>
-                <label>{element.etiqueta_nombre}</label>
-                <label>Fecha Entrega</label>
-                <label>{`${date.getDate()}/${
-                  date.getMonth() + 1
-                }/${date.getFullYear()}`}</label>
+                  <label>CLiente: {element.cliente_nombre}</label>
+                  <label>{element.etiqueta_nombre}</label>
+                  <label>Fecha Entrega</label>
+                  <label>{`${date.getDate()}/${
+                    date.getMonth() + 1
+                  }/${date.getFullYear()}`}</label>
+                </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
+
+      {vista == "tabla" && (
+        <table className="content-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Cliente</th>
+              <th>Etiqueta</th>
+              <th>Fecha Inicio</th>
+              <th>Fecha Entrega</th>
+              <th>Comentarios</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {proyectos?.map((element, index) => {
+              const fechaInicio = new Date(element.fecha_inicio);
+              const fechaEntrega = new Date(element.fecha_entrega);
+              console.log(element);
+              return (
+                <tr
+                  key={index}
+                  onClick={async () => {
+                    setIdProyecto(element.id);
+                    navigateTo("/proyectoDetalle");
+                    setEmpleadosAsignados(
+                      await getProyectosByIdProyecto(element.id)
+                    );
+                  }}
+                >
+                  <td>{element.nombre}</td>
+                  <td>{element.cliente_nombre}</td>
+                  <td>{element.etiqueta_nombre}</td>
+                  <th>{`${fechaInicio.getDate()}/${
+                    fechaInicio.getMonth() + 1
+                  }/${fechaInicio.getFullYear()}`}</th>
+                  <th>{`${fechaEntrega.getDate()}/${
+                    fechaEntrega.getMonth() + 1
+                  }/${fechaEntrega.getFullYear()}`}</th>
+                  <td>{element.comentarios}</td>
+                  <td
+                    className={element.estado == "finalizado" ? "resuelta" : ""}
+                  >
+                    {element.estado}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      )}
+
       {viewInsertProyecto && (
         <div className="empleado-create-modal-container">
           <div className="empleado-create-modal">

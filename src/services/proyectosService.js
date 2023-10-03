@@ -8,6 +8,22 @@ export const getProyectos = async () => {
   return proyectos.data;
 };
 
+export const getProyectoArchivos = async () => {
+  const archivos = await axios.get(
+    `${import.meta.env.VITE_BACKEND_URL}/proyectos/archivos`
+  );
+
+  return archivos.data;
+};
+
+export const deleteProyectoArchivo = async (id) => {
+  const archivo = await axios.delete(
+    `${import.meta.env.VITE_BACKEND_URL}/proyectos/archivo/delete/${id}`
+  );
+
+  return archivo.data;
+};
+
 export const getProyectosById = async (id) => {
   const proyectos = await axios.get(
     `${import.meta.env.VITE_BACKEND_URL}/proyectos/user/${id}`

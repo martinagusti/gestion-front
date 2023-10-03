@@ -10,14 +10,18 @@ import {
   createTarea,
   deleteTarea,
   deleteTareaArchivo,
+  editTarea,
   getArchivos,
   getProyectosByIdProyecto,
+  getTareas,
 } from "../services";
 import {
   createEmpleadoAsignado,
   deleteEmpleadoAsignado,
   deleteProyecto,
+  deleteProyectoArchivo,
   editProyecto,
+  getProyectoArchivos,
   getProyectos,
 } from "../services/proyectosService";
 
@@ -35,6 +39,8 @@ function ProyectoDetalle({
   setTareas,
   archivos,
   setArchivos,
+  proyectoArchivos,
+  setProyectoArchivos,
 }) {
   const { setToken, setUser, token } = useContext(AuthContext);
   const [errorText, setErrorText] = useState();
@@ -44,15 +50,33 @@ function ProyectoDetalle({
 
   const [viewInsertTarea, setViewInsertTarea] = useState(false);
   const [viewDeleteTarea, setViewDeleteTarea] = useState(false);
+  const [viewEditTarea, setViewEditTarea] = useState(false);
   const [deleteTareaId, setDeleteTareaId] = useState(null);
   const [viewFileModal, setViewFileModal] = useState(false);
+  const [viewProyectoFileModal, setViewProyectoFileModal] = useState(false);
   const [fileName, setFileName] = useState("");
+  const [proyectoFileName, setProyectoFileName] = useState("");
   const [fileId, setFileId] = useState();
+  const [editTareaId, setEditTareaId] = useState();
+  const [editTareaEstado, setEditTareaEstado] = useState("");
 
   const navigateTo = useNavigate();
 
+  const user = JSON.parse(localStorage.getItem("gestionUser"));
+
+  console.log(proyectoArchivos);
+  proyectoArchivos = proyectoArchivos.filter((element) => {
+    return element.id_proyecto == idProyecto;
+  });
+
   tareas = tareas.filter((element) => {
     return element.id_proyecto == idProyecto;
+  });
+
+  tareas.sort((a, b) => {
+    const date = new Date(a.fecha_final);
+    const date2 = new Date(b.fecha_final);
+    return date.getTime() - date2.getTime();
   });
 
   incidencias = incidencias.filter((element) => {
@@ -280,6 +304,10 @@ function ProyectoDetalle({
     setFileName(e.target.value);
   };
 
+  const handleOnChangeProyectoFileName = (e) => {
+    setProyectoFileName(e.target.value);
+  };
+
   const cargarArchivo = async () => {
     const date = new Date();
 
@@ -303,6 +331,16 @@ function ProyectoDetalle({
     ); */
   };
 
+  const cargarProyectoArchivo = async () => {
+    const date = new Date();
+
+    setTimeout(async () => {
+      const archivosProyecto = await getProyectoArchivos();
+
+      setProyectoArchivos(archivosProyecto);
+    }, 1000);
+  };
+
   const deleteArchivo = async (element) => {
     try {
       const deleted = await deleteTareaArchivo(element.id);
@@ -319,8 +357,63 @@ function ProyectoDetalle({
     }
   };
 
+  const deleteProyectoArchivoFunction = async (element) => {
+    try {
+      const deleted = await deleteProyectoArchivo(element.id);
+      if (deleted) {
+        setProyectoArchivos(
+          proyectoArchivos.filter((archivo) => {
+            return archivo.id !== element.id;
+          })
+        );
+      }
+    } catch (error) {
+      console.log(error);
+      setErrorText(error.response.data.error);
+    }
+  };
+
+  const editTareaFunction = async (event) => {
+    event.preventDefault();
+    if (editTareaEstado !== "") {
+      try {
+        const edited = await editTarea(editTareaId, editTareaEstado);
+        console.log(edited);
+        if (edited) {
+          setTareas(await getTareas());
+          setViewEditTarea(false);
+        }
+      } catch (error) {
+        console.log(error);
+        setErrorText(error.response.data.error);
+      }
+    }
+  };
+
+  const handleOnChangeEditTarea = (e) => {
+    setEditTareaEstado(e.target.value);
+  };
+
+  const handleOnChangeFilterTareaEmpleado = async (e) => {
+    const todos = await getTareas();
+    if (e.target.value !== "") {
+      setTareas(
+        todos.filter((element) => {
+          return element.id_empleado == e.target.value;
+        })
+      );
+    } else {
+      setTareas(todos);
+    }
+  };
+
+  const getProyectoArchivosFunction = async () => {
+    setViewProyectoFileModal(true);
+  };
+
   return (
     <div className="proyectoDetalle-container">
+      <button onClick={() => getProyectoArchivosFunction()}>Archivos</button>
       {proyectos.map((element, index) => {
         const fechaInicio = new Date(element.fecha_inicio);
         const fechaEntrega = new Date(element.fecha_entrega);
@@ -508,6 +601,7 @@ function ProyectoDetalle({
                 onChange={handleOnChangeEstado}
                 defaultValue={estado}
               >
+                <option value="pendiente">PENDIENTE</option>
                 <option value="en curso">EN CURSO</option>
                 <option value="finalizado">FINALIZADO</option>
               </select>
@@ -538,15 +632,49 @@ function ProyectoDetalle({
         </div>
       )}
 
-      <h2>
-        Tareas (filtros por empleado, prioridad, estado, ordenar por fecha
-        final)
-      </h2>
+      <h2>TAREAS</h2>
       {nivel !== "empleado" && (
-        <button type="button" onClick={() => setViewInsertTarea(true)}>
-          NUEVA TAREA
-        </button>
+        <div className="btn-insertar-container">
+          <button
+            type="button"
+            className="btn-insertar"
+            onClick={() => setViewInsertTarea(true)}
+          >
+            NUEVA
+          </button>
+        </div>
       )}
+
+      <div className="filtros-tareas">
+        <label>Empleado</label>
+        <select
+          name="filtroTareaEmpleado"
+          id="filtroTareaEmpleado"
+          onChange={handleOnChangeFilterTareaEmpleado}
+        >
+          <option value="">TODOS</option>
+          {empleadosAsignados?.map((element, index) => {
+            return (
+              <option
+                key={index}
+                value={element.id_empleado}
+              >{`${element.nombre} ${element.apellido}`}</option>
+            );
+          })}
+        </select>
+
+        {/*   <label>Estado</label>
+        <select
+          name="filtroTareaEstado"
+          id="filtroTareaEstado"
+          onChange={handleOnChangeFilterTareaEstado}
+        >
+          <option value="">TODOS</option>
+          <option value="pendiente">Pendiente</option>
+          <option value="en proceso">En Proceso</option>
+          <option value="resuelta">Resuelta</option>
+        </select> */}
+      </div>
 
       <table className="content-table">
         <thead>
@@ -581,7 +709,9 @@ function ProyectoDetalle({
                 }/${fechaFinal.getFullYear()}`}</th>
 
                 <td>{element.prioridad}</td>
-                <td>{element.estado}</td>
+                <td className={element.estado == "resuelta" ? "resuelta" : ""}>
+                  {element.estado}
+                </td>
 
                 <td className="actions-btn-container">
                   <button
@@ -592,7 +722,16 @@ function ProyectoDetalle({
                     className="btn-archivo"
                   ></button>
                   <button
-                    onClick={() => console.log("Editar funcion")}
+                    onClick={() => {
+                      if (
+                        element.id_empleado == user.id ||
+                        nivel !== "empleado"
+                      ) {
+                        setViewEditTarea(true);
+                        setEditTareaId(element.id);
+                        setEditTareaEstado(element.estado);
+                      }
+                    }}
                     className="empleados-btn-editar"
                   ></button>
                   {nivel !== "empleado" && (
@@ -743,6 +882,37 @@ function ProyectoDetalle({
         </div>
       )}
 
+      {viewEditTarea && (
+        <div className="modal-container">
+          <div className="modal">
+            <h2>Editar Tarea</h2>
+            <select
+              name="estado"
+              id="estado"
+              onChange={handleOnChangeEditTarea}
+              defaultValue={editTareaEstado}
+            >
+              <option value="">Estado</option>
+              <option value="pendiente">Pendiente</option>
+              <option value="en proceso">En Proceso</option>
+              <option value="resuelta">Resuelta</option>
+            </select>
+            <div className="modal-actions">
+              <button onClick={(event) => editTareaFunction(event)}>
+                ACEPTAR
+              </button>
+              <button
+                onClick={() => {
+                  setViewEditTarea(false);
+                }}
+              >
+                CANCELAR
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {viewFileModal && (
         <div className="modal-container">
           <div className="modal">
@@ -784,23 +954,90 @@ function ProyectoDetalle({
               encType="multipart/form-data"
               className="form-edit-container"
             >
-              {nivel !== "empleado" && (
-                <input
-                  type="file"
-                  name="file"
-                  id=""
-                  /* defaultValue={fileName} */
-                  onChange={handleOnChangeFileName}
-                  multiple
-                />
-              )}
+              <input
+                type="file"
+                name="file"
+                id=""
+                /* defaultValue={fileName} */
+                onChange={handleOnChangeFileName}
+                multiple
+              />
+
               {errorText && <span>{errorText}</span>}
               <div className="modal-actions">
-                {nivel !== "empleado" && <button type="submit">ENVIAR</button>}
+                <button type="submit">ENVIAR</button>
                 <button
                   type="button"
                   onClick={() => {
                     setViewFileModal(false);
+                    setErrorText(null);
+                  }}
+                >
+                  SALIR
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {viewProyectoFileModal && (
+        <div className="modal-container">
+          <div className="modal">
+            <div className="archivos-container">
+              {proyectoArchivos
+                .filter((element) => {
+                  return element.id_tarea == fileId;
+                })
+                .map((element, index) => {
+                  return (
+                    <div key={index} className="archivos">
+                      <a
+                        href={`${
+                          import.meta.env.VITE_BACKEND_URL
+                        }/proyectosFiles/${element.nombre}`}
+                        target="_blank"
+                        download="archivo.txt"
+                      >
+                        {element.nombre}
+                      </a>
+                      {nivel !== "empleado" && (
+                        <button
+                          className="empleados-btn-eliminar"
+                          onClick={() => deleteProyectoArchivoFunction(element)}
+                        ></button>
+                      )}
+                    </div>
+                  );
+                })}
+            </div>
+
+            <form
+              onSubmit={() => cargarProyectoArchivo()}
+              action={`${
+                import.meta.env.VITE_BACKEND_URL
+              }/proyectos/files/${idProyecto}`}
+              target="_blank"
+              method="post"
+              encType="multipart/form-data"
+              className="form-edit-container"
+            >
+              <input
+                type="file"
+                name="file"
+                id=""
+                /* defaultValue={fileName} */
+                onChange={handleOnChangeProyectoFileName}
+                multiple
+              />
+
+              {errorText && <span>{errorText}</span>}
+              <div className="modal-actions">
+                <button type="submit">ENVIAR</button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setViewProyectoFileModal(false);
                     setErrorText(null);
                   }}
                 >

@@ -84,3 +84,7 @@
   justify-content: space-between;
   gap: 1rem;
 }
+
+.resuelta {
+  background-color: rgb(61, 198, 61);
+}

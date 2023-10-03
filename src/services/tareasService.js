@@ -57,3 +57,14 @@ export const deleteTareaArchivo = async (id) => {
 
   return archivo.data;
 };
+
+export const editTarea = async (id, estado) => {
+  const tarea = await axios.patch(
+    `${import.meta.env.VITE_BACKEND_URL}/tareas/update/${id}`,
+    {
+      estado,
+    }
+  );
+
+  return tarea.data;
+};

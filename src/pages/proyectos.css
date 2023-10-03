@@ -91,3 +91,16 @@ span {
   margin-top: 10px;
   margin-bottom: 20px;
 }
+
+.filtros-proyecto {
+  width: 80%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.vistas-btn {
+  display: flex;
+  gap: 1rem;
+}

@@ -21,6 +21,7 @@ import useIncidencias from "./hooks/useIncidencias";
 import Incidencias from "./pages/Incidencias";
 import useTareas from "./hooks/useTareas";
 import useArchivos from "./hooks/useArchivos";
+import useProyectoArchivos from "./hooks/useProyectoArchivos";
 
 function App() {
   const { setToken, setUser, token } = useContext(AuthContext);
@@ -32,6 +33,7 @@ function App() {
   const { incidencias, setIncidencias } = useIncidencias();
   const { tareas, setTareas } = useTareas();
   const { archivos, setArchivos } = useArchivos();
+  const { proyectoArchivos, setProyectoArchivos } = useProyectoArchivos();
 
   const [idProyecto, setIdProyecto] = useState();
   const [empleadosAsignados, setEmpleadosAsignados] = useState();
@@ -97,6 +99,8 @@ function App() {
               <ProyectoDetalle
                 archivos={archivos}
                 setArchivos={setArchivos}
+                proyectoArchivos={proyectoArchivos}
+                setProyectoArchivos={setProyectoArchivos}
                 setTareas={setTareas}
                 tareas={tareas}
                 proyectos={proyectos}
