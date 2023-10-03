@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 
-import { useNavigate } from "react-router-dom";
+import { json, useNavigate } from "react-router-dom";
 
 import "./empleados.css";
 
@@ -33,7 +33,7 @@ function Empleados({ empleados, setEmpleados }) {
 
   const navigateTo = useNavigate();
 
-  console.log(empleados);
+  const user = JSON.parse(localStorage.getItem("gestionUser"));
 
   const {
     register,
@@ -125,8 +125,13 @@ function Empleados({ empleados, setEmpleados }) {
         event.target.nivel.value,
         idEdit
       );
+      const empleadosEditado = await getEmpleados();
 
-      setEmpleados(await getEmpleados());
+      setEmpleados(
+        empleadosEditado.filter((element) => {
+          return element.nivel !== "cliente";
+        })
+      );
       setEditando(false);
       setPassword("");
       setVerifyPassword("");
@@ -164,11 +169,13 @@ function Empleados({ empleados, setEmpleados }) {
 
   return (
     <div className="empleados-container">
-      <div className="btn-insertar-container">
-        <button className="btn-insertar" onClick={() => createNewEmpleado()}>
-          NUEVO
-        </button>
-      </div>
+      {user.nivel == "administrador" && (
+        <div className="btn-insertar-container">
+          <button className="btn-insertar" onClick={() => createNewEmpleado()}>
+            NUEVO
+          </button>
+        </div>
+      )}
 
       {viewInsertEmpleado && (
         <div className="empleado-create-modal-container">
@@ -370,43 +377,45 @@ function Empleados({ empleados, setEmpleados }) {
           </div>
         </div>
       )}
-      <div className="box-table-content">
-        <table className="content-table">
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Apellidos</th>
-              <th>Email</th>
-              <th>Nivel</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
+      {user.nivel == "administrador" && (
+        <div className="box-table-content">
+          <table className="content-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Apellidos</th>
+                <th>Email</th>
+                <th>Nivel</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
 
-          <tbody>
-            {empleados.map((element, index) => {
-              return (
-                <tr key={index}>
-                  <td>{element.nombre}</td>
-                  <td>{element.apellido}</td>
-                  <td>{element.email}</td>
-                  <td>{element.nivel}</td>
+            <tbody>
+              {empleados.map((element, index) => {
+                return (
+                  <tr key={index}>
+                    <td>{element.nombre}</td>
+                    <td>{element.apellido}</td>
+                    <td>{element.email}</td>
+                    <td>{element.nivel}</td>
 
-                  <td>
-                    <button
-                      onClick={() => edit(element)}
-                      className="empleados-btn-editar"
-                    ></button>
-                    <button
-                      onClick={() => deleteEmpleadoFunction(element)}
-                      className="empleados-btn-eliminar"
-                    ></button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+                    <td>
+                      <button
+                        onClick={() => edit(element)}
+                        className="empleados-btn-editar"
+                      ></button>
+                      <button
+                        onClick={() => deleteEmpleadoFunction(element)}
+                        className="empleados-btn-eliminar"
+                      ></button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
       {popup && (
         <div className="popup">
           <h2>{popupData}</h2>

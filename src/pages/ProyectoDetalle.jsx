@@ -50,6 +50,8 @@ function ProyectoDetalle({
 
   const [viewInsertTarea, setViewInsertTarea] = useState(false);
   const [viewDeleteTarea, setViewDeleteTarea] = useState(false);
+  const [viewDeleteEmpleadoAsignado, setViewDeleteEmpleadoAsignado] =
+    useState(false);
   const [viewEditTarea, setViewEditTarea] = useState(false);
   const [deleteTareaId, setDeleteTareaId] = useState(null);
   const [viewFileModal, setViewFileModal] = useState(false);
@@ -59,6 +61,7 @@ function ProyectoDetalle({
   const [fileId, setFileId] = useState();
   const [editTareaId, setEditTareaId] = useState();
   const [editTareaEstado, setEditTareaEstado] = useState("");
+  const [idEmpleado, setIdEmpleado] = useState();
 
   const navigateTo = useNavigate();
 
@@ -191,17 +194,18 @@ function ProyectoDetalle({
     }
   };
 
-  const deleteEmpleadoFunction = async (element) => {
+  const deleteEmpleadoAsignadoFunction = async () => {
     try {
       const deleted = await deleteEmpleadoAsignado(
-        element.id_proyecto,
-        parseInt(element.id_empleado)
+        idProyecto,
+        parseInt(idEmpleado)
       );
       setEmpleadosAsignados(
         empleadosAsignados.filter((empleado) => {
-          return empleado.id_empleado != element.id_empleado;
+          return empleado.id_empleado != idEmpleado;
         })
       );
+      setViewDeleteEmpleadoAsignado(false);
     } catch (error) {
       console.log(error);
       setErrorText(error.response.data.error);
@@ -462,7 +466,10 @@ function ProyectoDetalle({
 
                     <td>
                       <button
-                        onClick={() => deleteEmpleadoFunction(element)}
+                        onClick={() => {
+                          setViewDeleteEmpleadoAsignado(true);
+                          setIdEmpleado(element.id_empleado);
+                        }}
                         className="empleados-btn-eliminar"
                       ></button>
                     </td>
@@ -778,7 +785,7 @@ function ProyectoDetalle({
               {errors2.descripcion?.type === "required" && (
                 <span>Campo requerido</span>
               )}
-              <label>Responsable</label>
+              <label>Usuario Asignado</label>
               <select
                 name="empleado2"
                 id="empleado2"
@@ -873,6 +880,29 @@ function ProyectoDetalle({
               <button
                 onClick={() => {
                   setViewDeleteTarea(false);
+                }}
+              >
+                CANCELAR
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {viewDeleteEmpleadoAsignado && (
+        <div className="delete-modal-container">
+          <div className="delete-modal">
+            <h2>
+              ¿Seguro desea eliminar este usuario? Esto afectara las tareas
+              asignadas a el.
+            </h2>
+            <div className="modal-actions">
+              <button onClick={() => deleteEmpleadoAsignadoFunction()}>
+                ACEPTAR
+              </button>
+              <button
+                onClick={() => {
+                  setViewDeleteEmpleadoAsignado(false);
                 }}
               >
                 CANCELAR

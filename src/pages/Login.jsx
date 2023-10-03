@@ -32,8 +32,14 @@ function Login() {
 
         setToken(response.data[0].accesToken);
 
-        navigateTo("/");
-        setErrorText(null);
+        if (response.data[1].nivel == "cliente") {
+          navigateTo("/incidencias");
+          setPage("Incidencias");
+          setErrorText(null);
+        } else {
+          navigateTo("/");
+          setErrorText(null);
+        }
       }
     } catch (error) {
       console.log(error);

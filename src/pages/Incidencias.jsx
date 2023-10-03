@@ -8,15 +8,41 @@ import { login } from "../services/authService";
 import { AuthContext } from "../context/AuthContext";
 import { createIncidencia } from "../services";
 
-function Incidencias({ incidencias, proyectos }) {
+function Incidencias({ incidencias, proyectos, clientes, setIncidencias }) {
   const { setToken, setUser, token } = useContext(AuthContext);
   const [errorText, setErrorText] = useState();
 
+  const user = JSON.parse(localStorage.getItem("gestionUser"));
+
   const navigateTo = useNavigate();
 
-  proyectos = proyectos.filter((element) => {
-    return element.id_cliente == 16;
+  clientes = clientes.filter((element) => {
+    return element.email_1 == user.email;
   });
+
+  incidencias = incidencias.filter((element) => {
+    return (element.id_cliente = clientes[0].id);
+  });
+
+  incidencias.sort((a, b) => {
+    return b.id - a.id;
+  });
+
+  proyectos = proyectos.filter((element) => {
+    return element.email_1 == user.email;
+  });
+
+  incidencias.map((element) => {
+    element.proyecto_nombre = proyectos.filter((proyecto) => {
+      return proyecto.id == element.id_proyecto;
+    })[0].nombre;
+  });
+
+  const logout = () => {
+    localStorage.removeItem("gestionUser");
+    setToken(null);
+    navigateTo("/");
+  };
 
   const {
     register,
@@ -28,9 +54,10 @@ function Incidencias({ incidencias, proyectos }) {
   const onSubmit = async (data, e) => {
     e.preventDefault();
     console.log(data);
-    const { nombre, empresa, telefono, email, comentario, id_proyecto } = data;
+    let { nombre, empresa, telefono, email, comentario, id_proyecto } = data;
 
-    const id_cliente = 16;
+    const id_cliente = 17;
+    id_proyecto = parseInt(id_proyecto);
 
     try {
       const created = await createIncidencia(
@@ -44,6 +71,12 @@ function Incidencias({ incidencias, proyectos }) {
       );
 
       console.log(created[0]);
+      const proyecto_nombre = proyectos.filter((element) => {
+        return element.id == id_proyecto;
+      });
+
+      created[0].proyecto_nombre = proyecto_nombre[0].nombre;
+      setIncidencias([created[0], ...incidencias]);
 
       reset();
 
@@ -56,85 +89,128 @@ function Incidencias({ incidencias, proyectos }) {
 
   return (
     <div className="incidencias-container">
-      <h1>Incidencias Page</h1>
-      <form
-        className="empleado-form-container"
-        method="post"
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <select
-          name="id_proyecto"
-          id="id_proyecto"
-          {...register("id_proyecto", {
-            required: true,
-          })}
+      <div className="btn-insertar-container">
+        <button className="btn-insertar" onClick={() => logout()}>
+          LOGOUT
+        </button>
+      </div>
+
+      <div className="envio-incidencia">
+        <form
+          className="form-container"
+          method="post"
+          onSubmit={handleSubmit(onSubmit)}
         >
-          <option value="">Seleccionar</option>
-          {proyectos.map((element, index) => {
-            return (
-              <option key={index} value={element.id}>
-                {element.nombre}
-              </option>
-            );
-          })}
-        </select>
-        <input
-          type="text"
-          id="nombre"
-          placeholder="Nombre"
-          {...register("nombre", {
-            required: true,
-          })}
-        />
-        {errors.nombre?.type === "required" && <span>Campo requerido</span>}
+          <select
+            name="id_proyecto"
+            id="id_proyecto"
+            {...register("id_proyecto", {
+              required: true,
+            })}
+          >
+            <option value="">Seleccionar Proyecto</option>
+            {proyectos.map((element, index) => {
+              return (
+                <option key={index} value={element.id}>
+                  {element.nombre}
+                </option>
+              );
+            })}
+          </select>
+          <input
+            type="text"
+            id="nombre"
+            placeholder="Nombre"
+            defaultValue={clientes[0]?.nombre}
+            {...register("nombre", {
+              required: true,
+            })}
+          />
+          {errors.nombre?.type === "required" && <span>Campo requerido</span>}
 
-        <input
-          type="text"
-          id="empresa"
-          placeholder="Empresa"
-          {...register("empresa", {
-            required: true,
-          })}
-        />
-        {errors.empresa?.type === "required" && <span>Campo requerido</span>}
-        <input
-          type="text"
-          id="telefono"
-          placeholder="Telefono"
-          {...register("telefono", {
-            required: true,
-          })}
-        />
-        {errors.telefono?.type === "required" && <span>Campo requerido</span>}
+          <input
+            type="text"
+            id="empresa"
+            placeholder="Empresa"
+            defaultValue={clientes[0]?.razon_social}
+            {...register("empresa", {
+              required: true,
+            })}
+          />
+          {errors.empresa?.type === "required" && <span>Campo requerido</span>}
+          <input
+            type="text"
+            id="telefono"
+            placeholder="Telefono"
+            defaultValue={clientes[0]?.telefono_1}
+            {...register("telefono", {
+              required: true,
+            })}
+          />
+          {errors.telefono?.type === "required" && <span>Campo requerido</span>}
 
-        <input
-          type="text"
-          placeholder="Email"
-          {...register("email", {
-            required: true,
-            pattern:
-              /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-          })}
-        />
+          <input
+            type="text"
+            placeholder="Email"
+            defaultValue={clientes[0]?.email_1}
+            {...register("email", {
+              required: true,
+              pattern:
+                /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+            })}
+          />
 
-        {errors.email?.type === "required" && <span>Campo requerido</span>}
-        {errors.email?.type === "pattern" && <span>Email no es valido</span>}
+          {errors.email?.type === "required" && <span>Campo requerido</span>}
+          {errors.email?.type === "pattern" && <span>Email no es valido</span>}
 
-        <input
-          type="text"
-          id="comentario"
-          placeholder="Comentario"
-          {...register("comentario", {
-            required: true,
-          })}
-        />
-        {errors.comentario?.type === "required" && <span>Campo requerido</span>}
+          <textarea
+            className="comentarios-input"
+            type="text"
+            id="comentario"
+            placeholder="Comentario"
+            {...register("comentario", {
+              required: true,
+            })}
+          />
+          {errors.comentario?.type === "required" && (
+            <span>Campo requerido</span>
+          )}
 
-        <div className="modal-actions">
-          <button type="submit">ENVIAR</button>
-        </div>
-        {errorText && <span>{errorText}</span>}
-      </form>
+          <div className="modal-actions">
+            <button type="submit">ENVIAR</button>
+          </div>
+          {errorText && <span>{errorText}</span>}
+        </form>
+      </div>
+
+      <div className="box-table-content">
+        <table className="content-table">
+          <thead>
+            <tr>
+              <th>Proyecto</th>
+              <th>Comentario</th>
+              <th>Estado</th>
+              <th>Fecha</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {incidencias.map((element, index) => {
+              const fecha = new Date(element.fecha);
+              return (
+                <tr key={index}>
+                  <td>{element.proyecto_nombre}</td>
+                  <td>{element.comentario}</td>
+                  <td>{element.estado}</td>
+                  <td>{`${fecha.getDate()}/${
+                    fecha.getMonth() + 1
+                  }/${fecha.getFullYear()}`}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

@@ -19,7 +19,11 @@ const useEmpleados = () => {
         try {
           setLoading(true);
           const data = await getEmpleados();
-          setEmpleados(data);
+          setEmpleados(
+            data.filter((element) => {
+              return element.nivel !== "cliente";
+            })
+          );
         } catch (error) {
           console.log(error);
           setError(error.message);

@@ -22,6 +22,7 @@ import Incidencias from "./pages/Incidencias";
 import useTareas from "./hooks/useTareas";
 import useArchivos from "./hooks/useArchivos";
 import useProyectoArchivos from "./hooks/useProyectoArchivos";
+import { useNavigate } from "react-router-dom";
 
 function App() {
   const { setToken, setUser, token } = useContext(AuthContext);
@@ -39,6 +40,8 @@ function App() {
   const [empleadosAsignados, setEmpleadosAsignados] = useState();
 
   const [page, setPage] = useState();
+
+  const navigateTo = useNavigate();
 
   return (
     <>
@@ -118,7 +121,12 @@ function App() {
           <Route
             path="/incidencias"
             element={
-              <Incidencias incidencias={incidencias} proyectos={proyectos} />
+              <Incidencias
+                incidencias={incidencias}
+                setIncidencias={setIncidencias}
+                proyectos={proyectos}
+                clientes={clientes}
+              />
             }
           />
         </Routes>

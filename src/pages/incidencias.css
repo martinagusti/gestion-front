@@ -3,4 +3,11 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 1rem;
+}
+
+.envio-incidencia {
+  background-color: rgb(50, 64, 117);
+  padding: 20px;
+  border-radius: 10px;
 }
