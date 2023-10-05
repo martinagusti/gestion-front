@@ -8,6 +8,14 @@ export const getIncidencias = async () => {
   return incidencias.data;
 };
 
+export const getIncidenciasMensajes = async () => {
+  const mensajes = await axios.get(
+    `${import.meta.env.VITE_BACKEND_URL}/incidencias/mensajes`
+  );
+
+  return mensajes.data;
+};
+
 export const createIncidencia = async (
   id_proyecto,
   id_cliente,
@@ -32,4 +40,21 @@ export const createIncidencia = async (
   );
 
   return incidencia.data;
+};
+
+export const createIncidenciaMensaje = async (
+  idIncidencia,
+  remitente,
+  mensaje
+) => {
+  const mensajeEnviado = await axios.post(
+    `${import.meta.env.VITE_BACKEND_URL}/incidencias/mensajes/create`,
+    {
+      id_incidencia: idIncidencia,
+      remitente,
+      mensaje,
+    }
+  );
+
+  return mensajeEnviado.data;
 };

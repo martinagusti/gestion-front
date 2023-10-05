@@ -1,0 +1,77 @@
+.incidenciasMensajes-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  gap: 2rem;
+}
+
+.mensajes-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 3rem;
+}
+
+.mensaje {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.asunto {
+  border: 1px solid rgb(20, 13, 81, 0.4);
+  width: 80vw;
+  padding: 5px 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+  background-color: rgb(240, 128, 128, 0.5);
+}
+
+.mensaje-container {
+  border-bottom: 1px solid rgb(20, 13, 81, 0.4);
+  border-left: 1px solid rgb(20, 13, 81, 0.4);
+  border-right: 1px solid rgb(20, 13, 81, 0.4);
+  width: 80vw;
+  padding: 5px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+  gap: 1rem;
+  font-size: 1rem;
+}
+
+.mensaje-titulo {
+  display: flex;
+  margin-top: 10px;
+  font-size: 1.2rem;
+}
+
+.envio-mensaje-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.texto {
+  width: 100%;
+  margin-bottom: 20px;
+  padding: 10px 20px;
+}
+
+.incidencia-mensaje-input {
+  width: 800px;
+  min-height: 300px;
+  border-radius: 10px;
+  padding: 5px 10px;
+  resize: none;
+}

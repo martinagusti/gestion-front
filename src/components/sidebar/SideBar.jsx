@@ -13,7 +13,7 @@ function SideBar({ nivel, page, setPage }) {
   const logout = () => {
     localStorage.removeItem("gestionUser");
     setToken(null);
-    navigateTo("/");
+    navigateTo("/login");
   };
 
   return (
@@ -65,7 +65,7 @@ function SideBar({ nivel, page, setPage }) {
             className="incidencias tooltip"
             onClick={() => {
               setPage("INCIDENCIAS");
-              navigateTo("/incidencias");
+              navigateTo("/notificaciones");
             }}
           >
             <span className="tooltip-box">Incidencias</span>
@@ -76,7 +76,6 @@ function SideBar({ nivel, page, setPage }) {
             onClick={() => {
               logout();
               setPage("LOGIN");
-              navigateTo("/");
             }}
           >
             <span className="tooltip-box">Logout</span>

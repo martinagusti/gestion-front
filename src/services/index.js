@@ -30,7 +30,12 @@ import {
   deleteProyectoArchivo,
 } from "./proyectosService";
 
-import { getIncidencias, createIncidencia } from "./incidenciasService";
+import {
+  getIncidencias,
+  createIncidencia,
+  getIncidenciasMensajes,
+  createIncidenciaMensaje,
+} from "./incidenciasService";
 
 import {
   getTareas,
@@ -110,6 +115,7 @@ export {
   editProyecto,
   getIncidencias,
   createIncidencia,
+  getIncidenciasMensajes,
   getTareas,
   createTarea,
   deleteTarea,
@@ -118,4 +124,5 @@ export {
   deleteTareaArchivo,
   getProyectoArchivos,
   deleteProyectoArchivo,
+  createIncidenciaMensaje,
 };

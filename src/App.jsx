@@ -23,6 +23,9 @@ import useTareas from "./hooks/useTareas";
 import useArchivos from "./hooks/useArchivos";
 import useProyectoArchivos from "./hooks/useProyectoArchivos";
 import { useNavigate } from "react-router-dom";
+import NotificacionesIncidencias from "./pages/NotificacionesIncidencias";
+import IncidenciaMensajes from "./pages/IncidenciaMensajes";
+import Home from "./pages/Home";
 
 function App() {
   const { setToken, setUser, token } = useContext(AuthContext);
@@ -31,24 +34,28 @@ function App() {
   const { clientes, setClientes } = useClientes();
   const { etiquetas, setEtiquetas } = useEtiquetas();
   const { proyectos, setProyectos } = useProyectos();
-  const { incidencias, setIncidencias } = useIncidencias();
+  const { incidencias, setIncidencias, mensajes, setMensajes } =
+    useIncidencias();
   const { tareas, setTareas } = useTareas();
   const { archivos, setArchivos } = useArchivos();
   const { proyectoArchivos, setProyectoArchivos } = useProyectoArchivos();
 
   const [idProyecto, setIdProyecto] = useState();
   const [empleadosAsignados, setEmpleadosAsignados] = useState();
+  const [idIncidencia, setIdIncidencia] = useState();
 
   const [page, setPage] = useState();
 
   const navigateTo = useNavigate();
+
+  const user = JSON.parse(localStorage.getItem("gestionUser"));
 
   return (
     <>
       <div className="app-container">
         <Header page={page} />
         {token && <SideBar nivel={nivel} setPage={setPage} />}
-        {!token && <Login />}
+        {!token && <Login setPage={setPage} page={page} />}
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route
@@ -65,6 +72,8 @@ function App() {
                 setClientes={setClientes}
                 nivel={nivel}
                 proyectos={proyectos}
+                empleados={empleados}
+                setEmpleados={setEmpleados}
               />
             }
           />
@@ -126,8 +135,41 @@ function App() {
                 setIncidencias={setIncidencias}
                 proyectos={proyectos}
                 clientes={clientes}
+                mensajes={mensajes}
+                setMensajes={setMensajes}
+                idIncidencia={idIncidencia}
+                setIdIncidencia={setIdIncidencia}
+                setPage={setPage}
+                page={page}
               />
             }
+          />
+          <Route
+            path="/notificaciones"
+            element={
+              <NotificacionesIncidencias
+                incidencias={incidencias}
+                setIncidencias={setIncidencias}
+                proyectos={proyectos}
+                clientes={clientes}
+                idIncidencia={idIncidencia}
+              />
+            }
+          />
+
+          <Route
+            path="/incidencias/mensajes"
+            element={
+              <IncidenciaMensajes
+                mensajes={mensajes}
+                setMensajes={setMensajes}
+                idIncidencia={idIncidencia}
+              />
+            }
+          />
+          <Route
+            path="/"
+            element={<Home nivel={nivel} proyectos={proyectos} />}
           />
         </Routes>
       </div>

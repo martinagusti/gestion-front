@@ -7,7 +7,7 @@ import "./login.css";
 import { login } from "../services/authService";
 import { AuthContext } from "../context/AuthContext";
 
-function Login() {
+function Login({ page, setPage }) {
   const { setToken, setUser, token } = useContext(AuthContext);
   const [errorText, setErrorText] = useState();
 
@@ -33,11 +33,12 @@ function Login() {
         setToken(response.data[0].accesToken);
 
         if (response.data[1].nivel == "cliente") {
-          navigateTo("/incidencias");
-          setPage("Incidencias");
+          navigateTo("/");
+          setPage("HOME");
           setErrorText(null);
         } else {
           navigateTo("/");
+          setPage("HOME");
           setErrorText(null);
         }
       }

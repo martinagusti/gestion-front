@@ -8,7 +8,18 @@ import { login } from "../services/authService";
 import { AuthContext } from "../context/AuthContext";
 import { createIncidencia } from "../services";
 
-function Incidencias({ incidencias, proyectos, clientes, setIncidencias }) {
+function Incidencias({
+  incidencias,
+  proyectos,
+  clientes,
+  setIncidencias,
+  mensajes,
+  setMensajes,
+  idIncidencia,
+  setIdIncidencia,
+  page,
+  setPage,
+}) {
   const { setToken, setUser, token } = useContext(AuthContext);
   const [errorText, setErrorText] = useState();
 
@@ -21,7 +32,7 @@ function Incidencias({ incidencias, proyectos, clientes, setIncidencias }) {
   });
 
   incidencias = incidencias.filter((element) => {
-    return (element.id_cliente = clientes[0].id);
+    return element.id_cliente == clientes[0].id;
   });
 
   incidencias.sort((a, b) => {
@@ -35,13 +46,14 @@ function Incidencias({ incidencias, proyectos, clientes, setIncidencias }) {
   incidencias.map((element) => {
     element.proyecto_nombre = proyectos.filter((proyecto) => {
       return proyecto.id == element.id_proyecto;
-    })[0].nombre;
+    })[0]?.nombre;
   });
 
   const logout = () => {
     localStorage.removeItem("gestionUser");
     setToken(null);
-    navigateTo("/");
+    setPage("LOGIN");
+    navigateTo("/login");
   };
 
   const {
@@ -56,7 +68,7 @@ function Incidencias({ incidencias, proyectos, clientes, setIncidencias }) {
     console.log(data);
     let { nombre, empresa, telefono, email, comentario, id_proyecto } = data;
 
-    const id_cliente = 17;
+    const id_cliente = clientes[0].id;
     id_proyecto = parseInt(id_proyecto);
 
     try {
@@ -70,7 +82,6 @@ function Incidencias({ incidencias, proyectos, clientes, setIncidencias }) {
         telefono
       );
 
-      console.log(created[0]);
       const proyecto_nombre = proyectos.filter((element) => {
         return element.id == id_proyecto;
       });
@@ -85,6 +96,11 @@ function Incidencias({ incidencias, proyectos, clientes, setIncidencias }) {
       console.log(error);
       setErrorText(error.response.data.error);
     }
+  };
+
+  const incidenciaMensajes = (element) => {
+    setIdIncidencia(element.id);
+    navigateTo("/incidencias/mensajes");
   };
 
   return (
@@ -108,7 +124,7 @@ function Incidencias({ incidencias, proyectos, clientes, setIncidencias }) {
               required: true,
             })}
           >
-            <option value="">Seleccionar Proyecto</option>
+            <option value="">Seleccionar Proyecto/Servicio</option>
             {proyectos.map((element, index) => {
               return (
                 <option key={index} value={element.id}>
@@ -117,6 +133,9 @@ function Incidencias({ incidencias, proyectos, clientes, setIncidencias }) {
               );
             })}
           </select>
+          {errors.id_proyecto?.type === "required" && (
+            <span>Campo requerido</span>
+          )}
           <input
             type="text"
             id="nombre"
@@ -167,7 +186,7 @@ function Incidencias({ incidencias, proyectos, clientes, setIncidencias }) {
             className="comentarios-input"
             type="text"
             id="comentario"
-            placeholder="Comentario"
+            placeholder="Asunto"
             {...register("comentario", {
               required: true,
             })}
@@ -188,8 +207,9 @@ function Incidencias({ incidencias, proyectos, clientes, setIncidencias }) {
           <thead>
             <tr>
               <th>Proyecto</th>
-              <th>Comentario</th>
+              <th>Asunto</th>
               <th>Estado</th>
+              <th>Mensajes</th>
               <th>Fecha</th>
             </tr>
           </thead>
@@ -197,11 +217,16 @@ function Incidencias({ incidencias, proyectos, clientes, setIncidencias }) {
           <tbody>
             {incidencias.map((element, index) => {
               const fecha = new Date(element.fecha);
+              const cantidadMensajes = mensajes.filter((mensaje) => {
+                return mensaje.id_incidencia == element.id;
+              });
+
               return (
-                <tr key={index}>
+                <tr key={index} onClick={() => incidenciaMensajes(element)}>
                   <td>{element.proyecto_nombre}</td>
                   <td>{element.comentario}</td>
                   <td>{element.estado}</td>
+                  <td>{cantidadMensajes.length}</td>
                   <td>{`${fecha.getDate()}/${
                     fecha.getMonth() + 1
                   }/${fecha.getFullYear()}`}</td>

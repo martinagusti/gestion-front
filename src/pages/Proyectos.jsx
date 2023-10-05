@@ -139,6 +139,7 @@ function Proyectos({
       });
       cliente_nombre = cliente_nombre[0].nombre;
       created[0].cliente_nombre = cliente_nombre;
+      created[0].estado = "pendiente";
 
       setProyectos([created[0], ...proyectos]);
       reset();
@@ -346,7 +347,7 @@ function Proyectos({
             {proyectos?.map((element, index) => {
               const fechaInicio = new Date(element.fecha_inicio);
               const fechaEntrega = new Date(element.fecha_entrega);
-              console.log(element);
+
               return (
                 <tr
                   key={index}

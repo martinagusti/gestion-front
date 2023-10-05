@@ -8,13 +8,21 @@ import "./clientes.css";
 import { AuthContext } from "../context/AuthContext";
 import {
   createCliente,
+  createEmpleado,
   deleteCliente,
   editCliente,
   getProyectosByIdCliente,
 } from "../services";
 import { getClientes } from "../services/clientesService";
 
-function Clientes({ clientes, setClientes, nivel, proyectos }) {
+function Clientes({
+  clientes,
+  setClientes,
+  nivel,
+  proyectos,
+  empleados,
+  setEmpleados,
+}) {
   const { setToken, setUser, token } = useContext(AuthContext);
   const [errorText, setErrorText] = useState();
 
@@ -122,6 +130,15 @@ function Clientes({ clientes, setClientes, nivel, proyectos }) {
 
       const date = new Date();
       created[0].fecha_alta = date;
+
+      const createUser = await createEmpleado(
+        nombre,
+        razon_social,
+        email_1,
+        cif,
+        cif,
+        "cliente"
+      );
 
       setClientes([created[0], ...clientes]);
       reset();
