@@ -5,3 +5,26 @@
   align-items: center;
   margin-top: 20px;
 }
+
+.select-estado {
+  border: none;
+}
+
+select {
+  padding: 5px 5px;
+}
+
+.select-empleado {
+  border: none;
+}
+
+.select-estado-resuelta {
+  border: none;
+  background-color: red;
+  color: white;
+}
+
+.select-estado-enproceso {
+  border: none;
+  background-color: yellow;
+}

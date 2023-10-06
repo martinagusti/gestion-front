@@ -31,6 +31,14 @@ export const getEmpleados = async () => {
   return points.data;
 };
 
+export const getEmpleadosProyectos = async () => {
+  const empleados = await axios.get(
+    `${import.meta.env.VITE_BACKEND_URL}/empleados/proyectos`
+  );
+
+  return empleados.data;
+};
+
 export const editEmpleado = async (
   nombre,
   apellido,

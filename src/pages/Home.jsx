@@ -13,8 +13,6 @@ function Home({ page, setPage, nivel, proyectos }) {
 
   const navigateTo = useNavigate();
 
-  console.log(proyectos);
-
   const user = JSON.parse(localStorage.getItem("gestionUser"));
 
   const misProyectos = proyectos.filter((element) => {

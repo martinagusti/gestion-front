@@ -9,7 +9,7 @@ import { AuthContext } from "../context/AuthContext";
 import { createIncidencia, createIncidenciaMensaje } from "../services";
 import Incidencias from "./Incidencias";
 
-function IncidenciaMensajes({ mensajes, setMensajes, idIncidencia }) {
+function IncidenciaMensajes({ mensajes, setMensajes, idIncidencia, nivel }) {
   const { setToken, setUser, token } = useContext(AuthContext);
   const [errorText, setErrorText] = useState();
 
@@ -32,7 +32,7 @@ function IncidenciaMensajes({ mensajes, setMensajes, idIncidencia }) {
     try {
       const created = await createIncidenciaMensaje(
         idIncidencia,
-        user.nombre,
+        nivel == "cliente" ? user.nombre : "Online Valles",
         mensaje
       );
 
@@ -59,9 +59,11 @@ function IncidenciaMensajes({ mensajes, setMensajes, idIncidencia }) {
 
   return (
     <div className="incidenciasMensajes-container">
-      <div>
-        <button onClick={() => navigateTo("/incidencias")}>VOLVER</button>
-      </div>
+      {nivel == "cliente" && (
+        <div>
+          <button onClick={() => navigateTo("/incidencias")}>VOLVER</button>
+        </div>
+      )}
       <div className="mensajes-container">
         {mensajesIncidencia.map((element, index) => {
           const fecha = new Date(element.fecha);

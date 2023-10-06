@@ -222,7 +222,11 @@ function Incidencias({
               });
 
               return (
-                <tr key={index} onClick={() => incidenciaMensajes(element)}>
+                <tr
+                  key={index}
+                  className="row"
+                  onClick={() => incidenciaMensajes(element)}
+                >
                   <td>{element.proyecto_nombre}</td>
                   <td>{element.comentario}</td>
                   <td>{element.estado}</td>

@@ -6,6 +6,7 @@ import {
   getEmpleados,
   editEmpleado,
   deleteEmpleado,
+  getEmpleadosProyectos,
 } from "./empleadosService";
 
 import { createCliente, deleteCliente, editCliente } from "./clientesService";
@@ -35,6 +36,7 @@ import {
   createIncidencia,
   getIncidenciasMensajes,
   createIncidenciaMensaje,
+  updateIncidencia,
 } from "./incidenciasService";
 
 import {
@@ -125,4 +127,6 @@ export {
   getProyectoArchivos,
   deleteProyectoArchivo,
   createIncidenciaMensaje,
+  getEmpleadosProyectos,
+  updateIncidencia,
 };

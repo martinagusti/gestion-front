@@ -26,6 +26,7 @@ import { useNavigate } from "react-router-dom";
 import NotificacionesIncidencias from "./pages/NotificacionesIncidencias";
 import IncidenciaMensajes from "./pages/IncidenciaMensajes";
 import Home from "./pages/Home";
+import useEmpleadosProyecto from "./hooks/useEmpleadosProyecto";
 
 function App() {
   const { setToken, setUser, token } = useContext(AuthContext);
@@ -39,6 +40,7 @@ function App() {
   const { tareas, setTareas } = useTareas();
   const { archivos, setArchivos } = useArchivos();
   const { proyectoArchivos, setProyectoArchivos } = useProyectoArchivos();
+  const { empleadosProyecto, setEmpleadosProyecto } = useEmpleadosProyecto();
 
   const [idProyecto, setIdProyecto] = useState();
   const [empleadosAsignados, setEmpleadosAsignados] = useState();
@@ -153,6 +155,11 @@ function App() {
                 proyectos={proyectos}
                 clientes={clientes}
                 idIncidencia={idIncidencia}
+                empleadosProyecto={empleadosProyecto}
+                setIdIncidencia={setIdIncidencia}
+                mensajes={mensajes}
+                setMensajes={setMensajes}
+                nivel={nivel}
               />
             }
           />
@@ -164,6 +171,7 @@ function App() {
                 mensajes={mensajes}
                 setMensajes={setMensajes}
                 idIncidencia={idIncidencia}
+                nivel={nivel}
               />
             }
           />

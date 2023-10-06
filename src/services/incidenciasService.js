@@ -58,3 +58,15 @@ export const createIncidenciaMensaje = async (
 
   return mensajeEnviado.data;
 };
+
+export const updateIncidencia = async (id, id_empleado, estado) => {
+  const updated = await axios.patch(
+    `${import.meta.env.VITE_BACKEND_URL}/incidencias/update/${id}`,
+    {
+      id_empleado,
+      estado,
+    }
+  );
+
+  return updated.data;
+};
