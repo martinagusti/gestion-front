@@ -1,3 +1,6 @@
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+
 import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -9,9 +12,27 @@ import { AuthContext } from "../context/AuthContext";
 import { createIncidencia, createIncidenciaMensaje } from "../services";
 import Incidencias from "./Incidencias";
 
+const modules = {
+  toolbar: [
+    [{ header: [1, 2, 3, 4, 5, 6, false] }],
+    [{ font: [] }],
+    [{ size: [] }],
+    ["bold", "italic", "underline", "strike", "blockquote"],
+    [
+      {
+        color: ["black", "red", "blue", "yellow", "green", "orange"],
+      },
+    ],
+    [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { list: "+1" }],
+    ["link", "image"],
+  ],
+};
+
 function IncidenciaMensajes({ mensajes, setMensajes, idIncidencia, nivel }) {
   const { setToken, setUser, token } = useContext(AuthContext);
   const [errorText, setErrorText] = useState();
+
+  const [value, setValue] = useState("");
 
   const user = JSON.parse(localStorage.getItem("gestionUser"));
 
@@ -30,19 +51,23 @@ function IncidenciaMensajes({ mensajes, setMensajes, idIncidencia, nivel }) {
     const { mensaje } = data;
 
     try {
-      const created = await createIncidenciaMensaje(
-        idIncidencia,
-        nivel == "cliente" ? user.nombre : "Online Valles",
-        mensaje
-      );
+      if (value !== `<p><br></p>`) {
+        console.log(value);
+        const created = await createIncidenciaMensaje(
+          idIncidencia,
+          nivel == "cliente" ? user.nombre : "Online Valles",
+          value
+        );
 
-      console.log(created);
-      const fech = new Date(created[0].fecha);
-      console.log(fech.getHours());
+        console.log(created);
+        const fech = new Date(created[0].fecha);
+        console.log(fech.getHours());
 
-      setMensajes([created[0], ...mensajes]);
-      setErrorText(null);
-      reset();
+        setMensajes([created[0], ...mensajes]);
+        setErrorText(null);
+        setValue("");
+        reset();
+      }
     } catch (error) {
       console.log(error);
       setErrorText(error.response.data.error);
@@ -82,7 +107,10 @@ function IncidenciaMensajes({ mensajes, setMensajes, idIncidencia, nivel }) {
                 )} ${element.remitente}`}
               </div>
               <div className="mensaje-container">
-                <div className="texto">{element.mensaje}</div>
+                <div
+                  className="texto"
+                  dangerouslySetInnerHTML={{ __html: element.mensaje }}
+                ></div>
               </div>
             </div>
           );
@@ -90,8 +118,21 @@ function IncidenciaMensajes({ mensajes, setMensajes, idIncidencia, nivel }) {
       </div>
       <div className="envio-mensaje-container">
         <label>ENVIAR UN MENSAJE</label>
-        <form method="post" onSubmit={handleSubmit(onSubmit)}>
-          <textarea
+        <form
+          method="post"
+          onSubmit={handleSubmit(onSubmit)}
+          className="form-mensajes"
+        >
+          <ReactQuill
+            theme="snow"
+            value={value}
+            onChange={setValue}
+            className="editor-input"
+            modules={modules}
+          />
+
+          {errors.mensaje?.type === "required" && <span>Campo requerido</span>}
+          {/* <textarea
             id="mensaje"
             placeholder="Mensaje"
             className="incidencia-mensaje-input"
@@ -99,7 +140,7 @@ function IncidenciaMensajes({ mensajes, setMensajes, idIncidencia, nivel }) {
               required: true,
             })}
           />
-          {errors.mensaje?.type === "required" && <span>Campo requerido</span>}
+          {errors.mensaje?.type === "required" && <span>Campo requerido</span>} */}
 
           <div className="modal-actions">
             <button type="submit">ENVIAR</button>

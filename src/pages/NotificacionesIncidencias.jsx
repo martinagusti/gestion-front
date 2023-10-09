@@ -133,6 +133,8 @@ function NotificacionesIncidencias({
                         ? "select-estado-resuelta"
                         : element.estado == "en proceso"
                         ? "select-estado-enproceso"
+                        : element.estado == "pendiente"
+                        ? "select-estado-pendiente"
                         : "select-estado"
                     }
                   >

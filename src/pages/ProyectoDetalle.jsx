@@ -1,3 +1,6 @@
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+
 import { useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -24,6 +27,22 @@ import {
   getProyectoArchivos,
   getProyectos,
 } from "../services/proyectosService";
+
+const modules = {
+  toolbar: [
+    [{ header: [1, 2, 3, 4, 5, 6, false] }],
+    [{ font: [] }],
+    [{ size: [] }],
+    ["bold", "italic", "underline", "strike", "blockquote"],
+    [
+      {
+        color: ["black", "red", "blue", "yellow", "green", "orange"],
+      },
+    ],
+    [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { list: "+1" }],
+    ["link", "image"],
+  ],
+};
 
 function ProyectoDetalle({
   proyectos,
@@ -92,6 +111,7 @@ function ProyectoDetalle({
 
   const [nombre, setNombre] = useState(proyectos[0]?.nombre);
   const [comentarios, setComentarios] = useState(proyectos[0]?.comentarios);
+  const [value, setValue] = useState(proyectos[0]?.comentarios);
 
   const fechaEntrega = new Date(proyectos[0]?.fecha_entrega);
   let dia = fechaEntrega.getDate();
@@ -268,7 +288,7 @@ function ProyectoDetalle({
     try {
       const edited = await editProyecto(
         event.target.nombre.value,
-        event.target.comentarios.value,
+        value,
         event.target.fecha_entrega.value,
         event.target.etiqueta.value,
         event.target.estado.value,
@@ -427,7 +447,12 @@ function ProyectoDetalle({
             <h2>{element.nombre}</h2>
             <h2>{element.cliente_nombre}</h2>
             <h2>{element.etiqueta_nombre}</h2>
-            <h2>{element.comentarios}</h2>
+            <div className="mensaje-container">
+              <div
+                className="texto"
+                dangerouslySetInnerHTML={{ __html: element.comentarios }}
+              ></div>
+            </div>
             <h2>{element.estado}</h2>
             <h2>{`${fechaInicio.getDate()}/${
               fechaInicio.getMonth() + 1
@@ -614,12 +639,13 @@ function ProyectoDetalle({
               </select>
 
               <label>Comentarios</label>
-              <textarea
-                className="comentarios-input"
-                type="text"
-                name="comentarios"
-                defaultValue={comentarios}
-                onChange={handleOnChangeComentarios}
+
+              <ReactQuill
+                theme="snow"
+                defaultValue={value}
+                onChange={setValue}
+                className="editor-input"
+                modules={modules}
               />
 
               <div className="modal-actions">

@@ -104,3 +104,7 @@ span {
   display: flex;
   gap: 1rem;
 }
+
+.ql-editor {
+  color: black;
+}

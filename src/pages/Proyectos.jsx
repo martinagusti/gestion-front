@@ -1,3 +1,6 @@
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+
 import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -14,6 +17,22 @@ import {
   getProyectosByIdProyecto,
 } from "../services";
 import { getClientes } from "../services/clientesService";
+
+const modules = {
+  toolbar: [
+    [{ header: [1, 2, 3, 4, 5, 6, false] }],
+    [{ font: [] }],
+    [{ size: [] }],
+    ["bold", "italic", "underline", "strike", "blockquote"],
+    [
+      {
+        color: ["black", "red", "blue", "yellow", "green", "orange"],
+      },
+    ],
+    [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { list: "+1" }],
+    ["link", "image"],
+  ],
+};
 
 function Proyectos({
   proyectos,
@@ -34,6 +53,8 @@ function Proyectos({
   const [desde, setDesde] = useState();
   const [hasta, setHasta] = useState();
   const [search, setSearch] = useState("");
+
+  const [value, setValue] = useState("");
 
   const navigateTo = useNavigate();
 
@@ -109,41 +130,40 @@ function Proyectos({
   const onSubmit = async (data, e) => {
     e.preventDefault();
 
-    const {
-      nombre,
-      cliente,
-      etiqueta,
-      comentarios,
-      fecha_inicio,
-      fecha_entrega,
-    } = data;
+    const { nombre, cliente, etiqueta, fecha_inicio, fecha_entrega } = data;
 
     try {
-      const created = await createProyecto(
-        cliente,
-        nombre,
-        comentarios,
-        fecha_inicio,
-        fecha_entrega,
-        etiqueta
-      );
+      console.log(value);
+      if (value == `<p></p>` || value == "" || value == "<p><br></p>") {
+        setErrorText("Debe completar todos los campos");
+      } else {
+        const created = await createProyecto(
+          cliente,
+          nombre,
+          value,
+          fecha_inicio,
+          fecha_entrega,
+          etiqueta
+        );
 
-      let etiqueta_nombre = etiquetas.filter((element) => {
-        return element.id == etiqueta;
-      });
-      etiqueta_nombre = etiqueta_nombre[0].nombre;
-      created[0].etiqueta_nombre = etiqueta_nombre;
+        let etiqueta_nombre = etiquetas.filter((element) => {
+          return element.id == etiqueta;
+        });
+        etiqueta_nombre = etiqueta_nombre[0].nombre;
+        created[0].etiqueta_nombre = etiqueta_nombre;
 
-      let cliente_nombre = clientes.filter((element) => {
-        return element.id == cliente;
-      });
-      cliente_nombre = cliente_nombre[0].nombre;
-      created[0].cliente_nombre = cliente_nombre;
-      created[0].estado = "pendiente";
+        let cliente_nombre = clientes.filter((element) => {
+          return element.id == cliente;
+        });
+        cliente_nombre = cliente_nombre[0].nombre;
+        created[0].cliente_nombre = cliente_nombre;
+        created[0].estado = "pendiente";
 
-      setProyectos([created[0], ...proyectos]);
-      reset();
-      setViewInsertProyecto(false);
+        setProyectos([created[0], ...proyectos]);
+        reset();
+        setViewInsertProyecto(false);
+        setErrorText(null);
+      }
     } catch (error) {
       console.log(error);
       setErrorText(error.response.data.error);
@@ -338,7 +358,6 @@ function Proyectos({
               <th>Etiqueta</th>
               <th>Fecha Inicio</th>
               <th>Fecha Entrega</th>
-              <th>Comentarios</th>
               <th>Estado</th>
             </tr>
           </thead>
@@ -368,7 +387,6 @@ function Proyectos({
                   <th>{`${fechaEntrega.getDate()}/${
                     fechaEntrega.getMonth() + 1
                   }/${fechaEntrega.getFullYear()}`}</th>
-                  <td>{element.comentarios}</td>
                   <td
                     className={element.estado == "finalizado" ? "resuelta" : ""}
                   >
@@ -402,89 +420,85 @@ function Proyectos({
                 <span>Campo requerido</span>
               )}
 
-              <label>Cliente</label>
-              <select
-                name="cliente"
-                id="cliente"
-                {...register("cliente", {
-                  required: true,
-                })}
-              >
-                {clientes.map((element, index) => {
-                  return (
-                    <option key={index} value={element.id}>
-                      {element.nombre}
-                    </option>
-                  );
-                })}
-              </select>
-
-              {errors.cliente?.type === "required" && (
-                <span>Campo requerido</span>
-              )}
-
-              <label>Etiqueta</label>
               <div>
-                <select
-                  name="etiqueta"
-                  id="etiqueta"
-                  {...register("etiqueta", {
+                <div>
+                  <label>Cliente</label>
+                  <select
+                    name="cliente"
+                    id="cliente"
+                    {...register("cliente", {
+                      required: true,
+                    })}
+                  >
+                    {clientes.map((element, index) => {
+                      return (
+                        <option key={index} value={element.id}>
+                          {element.nombre}
+                        </option>
+                      );
+                    })}
+                  </select>
+
+                  {errors.cliente?.type === "required" && (
+                    <span>Campo requerido</span>
+                  )}
+
+                  <label>Etiqueta</label>
+
+                  <select
+                    name="etiqueta"
+                    id="etiqueta"
+                    {...register("etiqueta", {
+                      required: true,
+                    })}
+                  >
+                    {etiquetas.map((element, index) => {
+                      return (
+                        <option key={index} value={element.id}>
+                          {element.nombre}
+                        </option>
+                      );
+                    })}
+                  </select>
+
+                  {errors.etiqueta?.type === "required" && (
+                    <span>Campo requerido</span>
+                  )}
+                </div>
+
+                <label>Fecha Inicio</label>
+                <input
+                  type="date"
+                  id="fecha_inicio"
+                  {...register("fecha_inicio", {
                     required: true,
                   })}
-                >
-                  {etiquetas.map((element, index) => {
-                    return (
-                      <option key={index} value={element.id}>
-                        {element.nombre}
-                      </option>
-                    );
+                />
+                {errors.fecha_inicio?.type === "required" && (
+                  <span>Campo requerido</span>
+                )}
+
+                <label>Fecha Entrega</label>
+                <input
+                  type="date"
+                  id="fecha_entrega"
+                  {...register("fecha_entrega", {
+                    required: true,
                   })}
-                </select>
-                <button type="button" onClick={() => nuevaEtiqueta()}>
-                  +
-                </button>
+                />
+                {errors.fecha_entrega?.type === "required" && (
+                  <span>Campo requerido</span>
+                )}
               </div>
 
-              {errors.etiqueta?.type === "required" && (
-                <span>Campo requerido</span>
-              )}
-
-              <label>Fecha Inicio</label>
-              <input
-                type="date"
-                id="fecha_inicio"
-                {...register("fecha_inicio", {
-                  required: true,
-                })}
-              />
-              {errors.fecha_inicio?.type === "required" && (
-                <span>Campo requerido</span>
-              )}
-
-              <label>Fecha Entrega</label>
-              <input
-                type="date"
-                id="fecha_entrega"
-                {...register("fecha_entrega", {
-                  required: true,
-                })}
-              />
-              {errors.fecha_entrega?.type === "required" && (
-                <span>Campo requerido</span>
-              )}
-
               <label>Comentarios</label>
-              <textarea
-                id="comentarios"
-                placeholder="Comentarios"
-                className="comentarios-input"
-                {...register("comentarios", {
-                  required: true,
-                })}
+              <ReactQuill
+                theme="snow"
+                value={value}
+                onChange={setValue}
+                className="editor-input"
+                modules={modules}
               />
-              {errors.comentarios?.type === "required" && (
-                <span>Campo requerido</span>
-              )}
 
               <div className="modal-actions">
                 <button type="submit">CREAR</button>

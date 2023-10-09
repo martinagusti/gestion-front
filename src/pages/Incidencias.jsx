@@ -185,8 +185,8 @@ function Incidencias({
           <textarea
             className="comentarios-input"
             type="text"
-            id="comentario"
             placeholder="Asunto"
+            id="comentario"
             {...register("comentario", {
               required: true,
             })}

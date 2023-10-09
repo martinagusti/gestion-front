@@ -68,10 +68,43 @@
   padding: 10px 20px;
 }
 
+.texto img {
+  max-width: 100%;
+}
+
 .incidencia-mensaje-input {
   width: 800px;
   min-height: 300px;
   border-radius: 10px;
   padding: 5px 10px;
   resize: none;
+}
+
+.form-mensajes {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.editor-input {
+  background-color: white;
+  max-width: 800px;
+  min-width: 500px;
+  min-height: 400px;
+}
+
+.ql-picker-label {
+  color: black;
+}
+
+.ql-picker-item::before {
+  color: black;
+}
+
+.ql-editor p {
+  color: black;
+}
+
+.mensaje-container span {
+  color: black;
 }

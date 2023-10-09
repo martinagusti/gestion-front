@@ -17,7 +17,7 @@
 }
 
 .form-container input {
-  width: 300px;
+  min-width: 300px;
   border-radius: 5px;
   border: 1px solid lightgray;
   padding: 5px 10px;
@@ -129,7 +129,7 @@
 }
 
 .modal {
-  width: 400px;
+  min-width: 400px;
   margin-top: 200px;
   background-color: rgb(50, 64, 117);
   color: rgb(168, 179, 220);
@@ -194,8 +194,8 @@
 }
 
 .empleado-create-modal {
-  width: 400px;
-  margin-top: 200px;
+  min-width: 400px;
+  margin-top: 20px;
   background-color: rgb(50, 64, 117);
   color: rgb(168, 179, 220);
   align-items: center;

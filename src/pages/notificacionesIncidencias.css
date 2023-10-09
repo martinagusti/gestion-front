@@ -8,6 +8,8 @@
 
 .select-estado {
   border: none;
+  background-color: red;
+  color: White;
 }
 
 select {
@@ -20,11 +22,20 @@ select {
 
 .select-estado-resuelta {
   border: none;
-  background-color: red;
+  background-color: green;
   color: white;
 }
 
 .select-estado-enproceso {
   border: none;
   background-color: yellow;
+}
+
+.select-estado-pendiente {
+  border: none;
+  background-color: red;
+}
+
+.ql-editor {
+  min-height: 500px;
 }
