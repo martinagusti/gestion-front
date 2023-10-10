@@ -32,11 +32,18 @@ import {
 } from "./proyectosService";
 
 import {
+  getServicios,
+  getServiciosByIdEmpleado,
+  getEmpleadosByIdServicio,
+} from "./serviciosService";
+
+import {
   getIncidencias,
   createIncidencia,
   getIncidenciasMensajes,
   createIncidenciaMensaje,
   updateIncidencia,
+  getMensajeArchivos,
 } from "./incidenciasService";
 
 import {
@@ -118,6 +125,7 @@ export {
   getIncidencias,
   createIncidencia,
   getIncidenciasMensajes,
+  getMensajeArchivos,
   getTareas,
   createTarea,
   deleteTarea,
@@ -129,4 +137,7 @@ export {
   createIncidenciaMensaje,
   getEmpleadosProyectos,
   updateIncidencia,
+  getServicios,
+  getServiciosByIdEmpleado,
+  getEmpleadosByIdServicio,
 };

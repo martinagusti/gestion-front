@@ -50,6 +50,7 @@ function Clientes({
   const [anotaciones_cliente, setAnotaciones_cliente] = useState(null);
 
   const [search, setSearch] = useState("");
+  const [searchByCif, setSearchByCif] = useState("");
 
   const [popup, setPopup] = useState(false);
   const [popupData, setPopupData] = useState("");
@@ -315,12 +316,28 @@ function Clientes({
     setSearch(e.target.value);
   };
 
+  const handleOnChangeSearchByCif = (e) => {
+    setSearchByCif(e.target.value);
+  };
+
   const searchByName = async () => {
     const allClientes = await getClientes();
     const filtered = allClientes.filter((element) => {
       return element.nombre.toLowerCase().includes(search.toLowerCase());
     });
     if (search !== "") {
+      setClientes(filtered);
+    } else {
+      setClientes(allClientes);
+    }
+  };
+
+  const searchByCifFunction = async () => {
+    const allClientes = await getClientes();
+    const filtered = allClientes.filter((element) => {
+      return element.cif.toLowerCase().includes(searchByCif.toLowerCase());
+    });
+    if (searchByCif !== "") {
       setClientes(filtered);
     } else {
       setClientes(allClientes);
@@ -349,6 +366,13 @@ function Clientes({
           onChange={handleOnChangeSearch}
         ></input>
         <button onClick={() => searchByName()}>BUSCAR</button>
+        <input
+          type="text"
+          defaultValue={search}
+          placeholder="Cliente CIF / DNI..."
+          onChange={handleOnChangeSearchByCif}
+        ></input>
+        <button onClick={() => searchByCifFunction()}>BUSCAR</button>
       </div>
 
       {viewInsertCliente && (

@@ -1,7 +1,7 @@
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
-import { useContext, useState } from "react";
+import { useContext, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 
 import { useNavigate } from "react-router-dom";
@@ -9,7 +9,11 @@ import { useNavigate } from "react-router-dom";
 import "./incidenciaMensajes.css";
 
 import { AuthContext } from "../context/AuthContext";
-import { createIncidencia, createIncidenciaMensaje } from "../services";
+import {
+  createIncidencia,
+  createIncidenciaMensaje,
+  getMensajeArchivos,
+} from "../services";
 import Incidencias from "./Incidencias";
 
 const modules = {
@@ -20,7 +24,10 @@ const modules = {
     ["bold", "italic", "underline", "strike", "blockquote"],
     [
       {
-        color: ["black", "red", "blue", "yellow", "green", "orange"],
+        color: [],
+      },
+      {
+        background: [],
       },
     ],
     [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { list: "+1" }],
@@ -28,11 +35,21 @@ const modules = {
   ],
 };
 
-function IncidenciaMensajes({ mensajes, setMensajes, idIncidencia, nivel }) {
+function IncidenciaMensajes({
+  mensajes,
+  setMensajes,
+  idIncidencia,
+  nivel,
+  mensajesArchivos,
+  setMensajesArchivos,
+}) {
   const { setToken, setUser, token } = useContext(AuthContext);
   const [errorText, setErrorText] = useState();
 
   const [value, setValue] = useState("");
+  const [fileId, setFileId] = useState();
+  const [fileName, setFileName] = useState("");
+  const [viewFileModal, setViewFileModal] = useState(false);
 
   const user = JSON.parse(localStorage.getItem("gestionUser"));
 
@@ -82,6 +99,21 @@ function IncidenciaMensajes({ mensajes, setMensajes, idIncidencia, nivel }) {
     return b.id - a.id;
   });
 
+  const handleOnChangeFileName = (e) => {
+    setFileName(e.target.value);
+  };
+
+  const cargarArchivo = async () => {
+    const date = new Date();
+
+    setTimeout(async () => {
+      const mensajeArchivos = await getMensajeArchivos();
+
+      setMensajesArchivos(mensajeArchivos);
+      setViewFileModal(false);
+    }, 1000);
+  };
+
   return (
     <div className="incidenciasMensajes-container">
       {nivel == "cliente" && (
@@ -111,6 +143,52 @@ function IncidenciaMensajes({ mensajes, setMensajes, idIncidencia, nivel }) {
                   className="texto"
                   dangerouslySetInnerHTML={{ __html: element.mensaje }}
                 ></div>
+                {mensajesArchivos.map((archivos, index) => {
+                  if (archivos.id_mensaje == element.id) {
+                    return (
+                      <div key={index}>
+                        {" "}
+                        <a
+                          href={`${
+                            import.meta.env.VITE_BACKEND_URL
+                          }/incidenciaFiles/${archivos.nombre}`}
+                          target="_blank"
+                          download="archivo.txt"
+                        >
+                          {archivos.nombre}
+                        </a>
+                      </div>
+                    );
+                  }
+                })}
+              </div>
+
+              <div>
+                <form
+                  onSubmit={() => cargarArchivo()}
+                  action={`${
+                    import.meta.env.VITE_BACKEND_URL
+                  }/incidencias/files/${fileId}`}
+                  target="_blank"
+                  method="post"
+                  encType="multipart/form-data"
+                  className="form-edit-container"
+                >
+                  <input
+                    type="file"
+                    name="file"
+                    id=""
+                    /* defaultValue={fileName} */
+                    onChange={handleOnChangeFileName}
+                    multiple
+                  />
+
+                  <div className="modal-actions">
+                    <button type="submit" onClick={() => setFileId(element.id)}>
+                      SUBIR
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
           );

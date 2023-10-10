@@ -62,6 +62,16 @@ function SideBar({ nivel, page, setPage }) {
           </div>
 
           <div
+            className="servicios tooltip"
+            onClick={() => {
+              setPage("SERVICIOS");
+              navigateTo("/servicios");
+            }}
+          >
+            <span className="tooltip-box">Servicios</span>
+          </div>
+
+          <div
             className="incidencias tooltip"
             onClick={() => {
               setPage("INCIDENCIAS");

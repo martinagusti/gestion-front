@@ -27,6 +27,9 @@ import NotificacionesIncidencias from "./pages/NotificacionesIncidencias";
 import IncidenciaMensajes from "./pages/IncidenciaMensajes";
 import Home from "./pages/Home";
 import useEmpleadosProyecto from "./hooks/useEmpleadosProyecto";
+import useServicios from "./hooks/useServicios";
+import Servicios from "./pages/Servicios";
+import ServicioDetalle from "./pages/ServicioDetalle";
 
 function App() {
   const { setToken, setUser, token } = useContext(AuthContext);
@@ -35,15 +38,20 @@ function App() {
   const { clientes, setClientes } = useClientes();
   const { etiquetas, setEtiquetas } = useEtiquetas();
   const { proyectos, setProyectos } = useProyectos();
+  const { servicios, setServicios } = useServicios();
   const { incidencias, setIncidencias, mensajes, setMensajes } =
     useIncidencias();
   const { tareas, setTareas } = useTareas();
-  const { archivos, setArchivos } = useArchivos();
+  const { archivos, setArchivos, mensajesArchivos, setMensajesArchivos } =
+    useArchivos();
   const { proyectoArchivos, setProyectoArchivos } = useProyectoArchivos();
   const { empleadosProyecto, setEmpleadosProyecto } = useEmpleadosProyecto();
 
   const [idProyecto, setIdProyecto] = useState();
+  const [idServicio, setIdServicio] = useState();
   const [empleadosAsignados, setEmpleadosAsignados] = useState();
+  const [empleadosAsignadosByServicio, setEmpleadosAsignadosByServicio] =
+    useState();
   const [idIncidencia, setIdIncidencia] = useState();
 
   const [page, setPage] = useState();
@@ -57,9 +65,12 @@ function App() {
       <div className="app-container">
         <Header page={page} />
         {token && <SideBar nivel={nivel} setPage={setPage} />}
-        {!token && <Login setPage={setPage} page={page} />}
+        {!token && page !== "LOGIN" && <Login setPage={setPage} page={page} />}
         <Routes>
-          <Route path="/login" element={<Login />} />
+          <Route
+            path="/login"
+            element={<Login setPage={setPage} page={page} />}
+          />
           <Route
             path="/empleados"
             element={
@@ -172,12 +183,58 @@ function App() {
                 setMensajes={setMensajes}
                 idIncidencia={idIncidencia}
                 nivel={nivel}
+                mensajesArchivos={mensajesArchivos}
+                setMensajesArchivos={setMensajesArchivos}
               />
             }
           />
           <Route
             path="/"
-            element={<Home nivel={nivel} proyectos={proyectos} />}
+            element={
+              <Home
+                nivel={nivel}
+                proyectos={proyectos}
+                setPage={setPage}
+                page={page}
+              />
+            }
+          />
+
+          <Route
+            path="/servicios"
+            element={
+              <Servicios
+                servicios={servicios}
+                setServicios={setServicios}
+                nivel={nivel}
+                empleados={empleados}
+                etiquetas={etiquetas}
+                setIdServicio={setIdServicio}
+                empleadosAsignadosByServicio={empleadosAsignadosByServicio}
+                setEmpleadosAsignadosByServicio={
+                  setEmpleadosAsignadosByServicio
+                }
+              />
+            }
+          />
+
+          <Route
+            path="/servicioDetalle"
+            element={
+              <ServicioDetalle
+                archivos={archivos}
+                servicios={servicios}
+                setServicios={setServicios}
+                nivel={nivel}
+                idServicio={idServicio}
+                empleados={empleados}
+                etiquetas={etiquetas}
+                incidencias={incidencias}
+                setEmpleadosAsignadosByServicio={
+                  setEmpleadosAsignadosByServicio
+                }
+              />
+            }
           />
         </Routes>
       </div>

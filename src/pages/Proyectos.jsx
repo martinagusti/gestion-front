@@ -26,7 +26,10 @@ const modules = {
     ["bold", "italic", "underline", "strike", "blockquote"],
     [
       {
-        color: ["black", "red", "blue", "yellow", "green", "orange"],
+        color: [],
+      },
+      {
+        background: [],
       },
     ],
     [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { list: "+1" }],

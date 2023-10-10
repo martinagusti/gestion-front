@@ -70,3 +70,11 @@ export const updateIncidencia = async (id, id_empleado, estado) => {
 
   return updated.data;
 };
+
+export const getMensajeArchivos = async () => {
+  const archivos = await axios.get(
+    `${import.meta.env.VITE_BACKEND_URL}/incidencias/archivos`
+  );
+
+  return archivos.data;
+};

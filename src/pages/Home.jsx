@@ -26,7 +26,14 @@ function Home({ page, setPage, nivel, proyectos }) {
   return (
     <div className="home-container">
       {nivel == "cliente" && (
-        <button onClick={() => navigateTo("/incidencias")}>INCIDENCIAS</button>
+        <button
+          onClick={() => {
+            navigateTo("/incidencias");
+            setPage("INCIDENCIAS");
+          }}
+        >
+          INCIDENCIAS
+        </button>
       )}
     </div>
   );

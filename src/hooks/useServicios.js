@@ -1,14 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { getArchivos } from "../services/tareasService";
-import { getMensajeArchivos } from "../services";
+import { getServicios, getServiciosByIdEmpleado } from "../services";
 
-const useArchivos = () => {
+const useServicios = () => {
   const { setToken, setUser, token } = useContext(AuthContext);
 
-  const [archivos, setArchivos] = useState([]);
-  const [mensajesArchivos, setMensajesArchivos] = useState([]);
+  const [servicios, setServicios] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -16,14 +14,18 @@ const useArchivos = () => {
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("gestionUser"));
+
     if (user) {
-      const loadArchivos = async () => {
+      const loadServicios = async () => {
         try {
           setLoading(true);
-          const data = await getArchivos();
-          const data2 = await getMensajeArchivos();
-          setMensajesArchivos(data2);
-          setArchivos(data);
+          if (user.nivel === "empleado") {
+            const data = await getServiciosByIdEmpleado(user.id);
+            setServicios(data);
+          } else {
+            const data = await getServicios();
+            setServicios(data);
+          }
         } catch (error) {
           console.log(error);
           setError(error.message);
@@ -31,18 +33,16 @@ const useArchivos = () => {
           setLoading(false);
         }
       };
-      loadArchivos();
+      loadServicios();
     }
   }, [token]);
 
   return {
-    archivos,
-    setArchivos,
-    mensajesArchivos,
-    setMensajesArchivos,
+    servicios,
+    setServicios,
     loading,
     error,
   };
 };
 
-export default useArchivos;
+export default useServicios;
