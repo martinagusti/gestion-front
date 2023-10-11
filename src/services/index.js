@@ -35,6 +35,11 @@ import {
   getServicios,
   getServiciosByIdEmpleado,
   getEmpleadosByIdServicio,
+  createServicio,
+  deleteServicio,
+  editServicio,
+  getServiciosArchivos,
+  deleteServicioArchivo,
 } from "./serviciosService";
 
 import {
@@ -140,4 +145,9 @@ export {
   getServicios,
   getServiciosByIdEmpleado,
   getEmpleadosByIdServicio,
+  createServicio,
+  deleteServicio,
+  editServicio,
+  getServiciosArchivos,
+  deleteServicioArchivo,
 };

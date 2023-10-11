@@ -42,8 +42,14 @@ function App() {
   const { incidencias, setIncidencias, mensajes, setMensajes } =
     useIncidencias();
   const { tareas, setTareas } = useTareas();
-  const { archivos, setArchivos, mensajesArchivos, setMensajesArchivos } =
-    useArchivos();
+  const {
+    archivos,
+    setArchivos,
+    mensajesArchivos,
+    setMensajesArchivos,
+    serviciosArchivos,
+    setServiciosArchivos,
+  } = useArchivos();
   const { proyectoArchivos, setProyectoArchivos } = useProyectoArchivos();
   const { empleadosProyecto, setEmpleadosProyecto } = useEmpleadosProyecto();
 
@@ -209,6 +215,7 @@ function App() {
                 nivel={nivel}
                 empleados={empleados}
                 etiquetas={etiquetas}
+                clientes={clientes}
                 setIdServicio={setIdServicio}
                 empleadosAsignadosByServicio={empleadosAsignadosByServicio}
                 setEmpleadosAsignadosByServicio={
@@ -222,12 +229,15 @@ function App() {
             path="/servicioDetalle"
             element={
               <ServicioDetalle
+                serviciosArchivos={serviciosArchivos}
+                setServiciosArchivos={setServiciosArchivos}
                 archivos={archivos}
                 servicios={servicios}
                 setServicios={setServicios}
                 nivel={nivel}
                 idServicio={idServicio}
                 empleados={empleados}
+                clientes={clientes}
                 etiquetas={etiquetas}
                 incidencias={incidencias}
                 setEmpleadosAsignadosByServicio={

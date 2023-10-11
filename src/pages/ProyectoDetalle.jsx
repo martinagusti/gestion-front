@@ -558,7 +558,6 @@ function ProyectoDetalle({
           </div>
         </div>
       )}
-
       {viewDeleteProyecto && (
         <div className="modal-container">
           <div className="modal">
@@ -584,7 +583,6 @@ function ProyectoDetalle({
           </div>
         </div>
       )}
-
       {editando && (
         <div className="modal-container">
           <div className="modal">
@@ -664,7 +662,6 @@ function ProyectoDetalle({
           </div>
         </div>
       )}
-
       <h2>TAREAS</h2>
       {nivel !== "empleado" && (
         <div className="btn-insertar-container">
@@ -677,7 +674,6 @@ function ProyectoDetalle({
           </button>
         </div>
       )}
-
       <div className="filtros-tareas">
         <label>Empleado</label>
         <select
@@ -708,7 +704,6 @@ function ProyectoDetalle({
           <option value="resuelta">Resuelta</option>
         </select> */}
       </div>
-
       <table className="content-table">
         <thead>
           <tr>
@@ -779,7 +774,6 @@ function ProyectoDetalle({
           })}
         </tbody>
       </table>
-
       {viewInsertTarea && (
         <div className="modal-container">
           <div className="modal">
@@ -896,7 +890,6 @@ function ProyectoDetalle({
           </div>
         </div>
       )}
-
       {viewDeleteTarea && (
         <div className="delete-modal-container">
           <div className="delete-modal">
@@ -914,7 +907,6 @@ function ProyectoDetalle({
           </div>
         </div>
       )}
-
       {viewDeleteEmpleadoAsignado && (
         <div className="delete-modal-container">
           <div className="delete-modal">
@@ -937,7 +929,6 @@ function ProyectoDetalle({
           </div>
         </div>
       )}
-
       {viewEditTarea && (
         <div className="modal-container">
           <div className="modal">
@@ -968,7 +959,6 @@ function ProyectoDetalle({
           </div>
         </div>
       )}
-
       {viewFileModal && (
         <div className="modal-container">
           <div className="modal">
@@ -1041,31 +1031,27 @@ function ProyectoDetalle({
         <div className="modal-container">
           <div className="modal">
             <div className="archivos-container">
-              {proyectoArchivos
-                .filter((element) => {
-                  return element.id_tarea == fileId;
-                })
-                .map((element, index) => {
-                  return (
-                    <div key={index} className="archivos">
-                      <a
-                        href={`${
-                          import.meta.env.VITE_BACKEND_URL
-                        }/proyectosFiles/${element.nombre}`}
-                        target="_blank"
-                        download="archivo.txt"
-                      >
-                        {element.nombre}
-                      </a>
-                      {nivel !== "empleado" && (
-                        <button
-                          className="empleados-btn-eliminar"
-                          onClick={() => deleteProyectoArchivoFunction(element)}
-                        ></button>
-                      )}
-                    </div>
-                  );
-                })}
+              {proyectoArchivos.map((element, index) => {
+                return (
+                  <div key={index} className="archivos">
+                    <a
+                      href={`${
+                        import.meta.env.VITE_BACKEND_URL
+                      }/proyectosFiles/${element.nombre}`}
+                      target="_blank"
+                      download="archivo.txt"
+                    >
+                      {element.nombre}
+                    </a>
+                    {nivel !== "empleado" && (
+                      <button
+                        className="empleados-btn-eliminar"
+                        onClick={() => deleteProyectoArchivoFunction(element)}
+                      ></button>
+                    )}
+                  </div>
+                );
+              })}
             </div>
 
             <form

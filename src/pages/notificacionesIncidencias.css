@@ -35,7 +35,3 @@ select {
   border: none;
   background-color: red;
 }
-
-.ql-editor {
-  min-height: 500px;
-}
