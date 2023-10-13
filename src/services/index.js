@@ -7,6 +7,7 @@ import {
   editEmpleado,
   deleteEmpleado,
   getEmpleadosProyectos,
+  getEmpleadosServicios,
 } from "./empleadosService";
 
 import { createCliente, deleteCliente, editCliente } from "./clientesService";
@@ -40,6 +41,8 @@ import {
   editServicio,
   getServiciosArchivos,
   deleteServicioArchivo,
+  createEmpleadoAsignadoByServicio,
+  deleteEmpleadoAsignadoByServicio,
 } from "./serviciosService";
 
 import {
@@ -141,6 +144,8 @@ export {
   deleteProyectoArchivo,
   createIncidenciaMensaje,
   getEmpleadosProyectos,
+  getEmpleadosServicios,
+  createEmpleadoAsignadoByServicio,
   updateIncidencia,
   getServicios,
   getServiciosByIdEmpleado,
@@ -150,4 +155,5 @@ export {
   editServicio,
   getServiciosArchivos,
   deleteServicioArchivo,
+  deleteEmpleadoAsignadoByServicio,
 };

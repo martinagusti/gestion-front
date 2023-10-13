@@ -263,10 +263,10 @@ function Servicios({
                 key={index}
                 onClick={async () => {
                   setIdServicio(element.id);
-                  navigateTo("/servicioDetalle");
                   setEmpleadosAsignadosByServicio(
                     await getEmpleadosByIdServicio(element.id)
                   );
+                  navigateTo("/servicioDetalle");
                 }}
               >
                 <td>{element.nombre}</td>

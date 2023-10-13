@@ -16,6 +16,7 @@ export const getArchivos = async () => {
 
 export const createTarea = async (
   id_proyecto,
+  id_servicio,
   id_empleado,
   titulo,
   descripcion,
@@ -28,12 +29,12 @@ export const createTarea = async (
     `${import.meta.env.VITE_BACKEND_URL}/tareas/create`,
     {
       id_proyecto,
+      id_servicio,
       id_empleado,
       titulo,
       descripcion,
       estado,
       prioridad,
-      archivo: "",
       fecha_comienzo: fecha_inicio,
       fecha_final: fecha_final,
     }

@@ -98,3 +98,33 @@ export const deleteServicioArchivo = async (id) => {
 
   return archivo.data;
 };
+
+export const createEmpleadoAsignadoByServicio = async (
+  id_servicio,
+  id_empleado
+) => {
+  const servicio = await axios.post(
+    `${import.meta.env.VITE_BACKEND_URL}/servicios/insert`,
+    {
+      id_servicio,
+      id_empleado,
+    }
+  );
+
+  return servicio.data;
+};
+
+export const deleteEmpleadoAsignadoByServicio = async (
+  id_servicio,
+  id_empleado
+) => {
+  const proyecto = await axios.post(
+    `${import.meta.env.VITE_BACKEND_URL}/servicios/deleteempleado`,
+    {
+      id_servicio,
+      id_empleado,
+    }
+  );
+
+  return proyecto.data;
+};

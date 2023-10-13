@@ -188,6 +188,7 @@ function ProyectoDetalle({
     try {
       const created = await createTarea(
         idProyecto,
+        null,
         empleado2,
         titulo,
         descripcion,
@@ -434,6 +435,8 @@ function ProyectoDetalle({
   const getProyectoArchivosFunction = async () => {
     setViewProyectoFileModal(true);
   };
+
+  console.log(empleadosAsignados);
 
   return (
     <div className="proyectoDetalle-container">

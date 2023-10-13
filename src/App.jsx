@@ -30,6 +30,7 @@ import useEmpleadosProyecto from "./hooks/useEmpleadosProyecto";
 import useServicios from "./hooks/useServicios";
 import Servicios from "./pages/Servicios";
 import ServicioDetalle from "./pages/ServicioDetalle";
+import useEmpleadosServicio from "./hooks/useEmpleadosServicio";
 
 function App() {
   const { setToken, setUser, token } = useContext(AuthContext);
@@ -52,6 +53,7 @@ function App() {
   } = useArchivos();
   const { proyectoArchivos, setProyectoArchivos } = useProyectoArchivos();
   const { empleadosProyecto, setEmpleadosProyecto } = useEmpleadosProyecto();
+  const { empleadosServicio, setEmpleadosServicio } = useEmpleadosServicio();
 
   const [idProyecto, setIdProyecto] = useState();
   const [idServicio, setIdServicio] = useState();
@@ -232,14 +234,20 @@ function App() {
                 serviciosArchivos={serviciosArchivos}
                 setServiciosArchivos={setServiciosArchivos}
                 archivos={archivos}
+                setArchivos={setArchivos}
                 servicios={servicios}
                 setServicios={setServicios}
                 nivel={nivel}
+                setTareas={setTareas}
+                tareas={tareas}
                 idServicio={idServicio}
                 empleados={empleados}
+                empleadosAsignados={empleadosAsignados}
+                setEmpleadosAsignados={setEmpleadosAsignados}
                 clientes={clientes}
                 etiquetas={etiquetas}
                 incidencias={incidencias}
+                empleadosAsignadosByServicio={empleadosAsignadosByServicio}
                 setEmpleadosAsignadosByServicio={
                   setEmpleadosAsignadosByServicio
                 }
