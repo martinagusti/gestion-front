@@ -60,6 +60,8 @@ function ProyectoDetalle({
   setArchivos,
   proyectoArchivos,
   setProyectoArchivos,
+  tareaId,
+  setTareaId,
 }) {
   const { setToken, setUser, token } = useContext(AuthContext);
   const [errorText, setErrorText] = useState();
@@ -112,6 +114,7 @@ function ProyectoDetalle({
   const [nombre, setNombre] = useState(proyectos[0]?.nombre);
   const [comentarios, setComentarios] = useState(proyectos[0]?.comentarios);
   const [value, setValue] = useState(proyectos[0]?.comentarios);
+  const [insertTareaValue, setInsertTareaValue] = useState();
 
   const fechaEntrega = new Date(proyectos[0]?.fecha_entrega);
   let dia = fechaEntrega.getDate();
@@ -191,7 +194,7 @@ function ProyectoDetalle({
         null,
         empleado2,
         titulo,
-        descripcion,
+        insertTareaValue,
         fecha_inicio,
         fecha_final,
         prioridad,
@@ -436,7 +439,14 @@ function ProyectoDetalle({
     setViewProyectoFileModal(true);
   };
 
-  console.log(empleadosAsignados);
+  const setInsertTareaValueFunction = (e) => {
+    setInsertTareaValue(e);
+  };
+
+  const viewTarea = (element) => {
+    setTareaId(element.id);
+    navigateTo("/tareaDetalle");
+  };
 
   return (
     <div className="proyectoDetalle-container">
@@ -711,7 +721,6 @@ function ProyectoDetalle({
         <thead>
           <tr>
             <th>Titulo</th>
-            <th>Descripcion</th>
             <th>Empleado</th>
             <th>Fecha Inicio</th>
             <th>Fecha Final</th>
@@ -727,20 +736,27 @@ function ProyectoDetalle({
             const fechaFinal = new Date(element.fecha_final);
             return (
               <tr key={index}>
-                <td>{element.titulo}</td>
-                <td>{element.descripcion}</td>
-                <td>
+                <td onClick={() => viewTarea(element)}>{element.titulo}</td>
+
+                <td onClick={() => viewTarea(element)}>
                   {element.nombre} {element.apellido}
                 </td>
-                <th>{`${fechaComienzo.getDate()}/${
+                <td
+                  onClick={() => viewTarea(element)}
+                >{`${fechaComienzo.getDate()}/${
                   fechaComienzo.getMonth() + 1
-                }/${fechaComienzo.getFullYear()}`}</th>
-                <th>{`${fechaFinal.getDate()}/${
+                }/${fechaComienzo.getFullYear()}`}</td>
+                <td
+                  onClick={() => viewTarea(element)}
+                >{`${fechaFinal.getDate()}/${
                   fechaFinal.getMonth() + 1
-                }/${fechaFinal.getFullYear()}`}</th>
+                }/${fechaFinal.getFullYear()}`}</td>
 
-                <td>{element.prioridad}</td>
-                <td className={element.estado == "resuelta" ? "resuelta" : ""}>
+                <td onClick={() => viewTarea(element)}>{element.prioridad}</td>
+                <td
+                  onClick={() => viewTarea(element)}
+                  className={element.estado == "resuelta" ? "resuelta" : ""}
+                >
                   {element.estado}
                 </td>
 
@@ -797,17 +813,22 @@ function ProyectoDetalle({
                 <span>Campo requerido</span>
               )}
 
-              <textarea
+              <ReactQuill
+                theme="snow"
+                defaultValue={insertTareaValue}
+                onChange={setInsertTareaValueFunction}
+                className="editor-input"
+                modules={modules}
+              />
+
+              {/*   <textarea
                 className="descripcion-input"
                 id="descripcion"
                 placeholder="Descripcion"
-                {...register2("descripcion", {
-                  required: true,
-                })}
               />
               {errors2.descripcion?.type === "required" && (
                 <span>Campo requerido</span>
-              )}
+              )} */}
               <label>Usuario Asignado</label>
               <select
                 name="empleado2"

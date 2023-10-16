@@ -59,11 +59,26 @@ export const deleteTareaArchivo = async (id) => {
   return archivo.data;
 };
 
-export const editTarea = async (id, estado) => {
+export const editTarea = async (
+  id,
+  empleado,
+  titulo,
+  descripcion,
+  estado,
+  prioridad,
+  fecha_comienzo,
+  fecha_final
+) => {
   const tarea = await axios.patch(
     `${import.meta.env.VITE_BACKEND_URL}/tareas/update/${id}`,
     {
+      id_empleado: empleado,
+      titulo,
+      descripcion,
       estado,
+      prioridad,
+      fecha_comienzo,
+      fecha_final,
     }
   );
 

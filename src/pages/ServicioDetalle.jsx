@@ -60,6 +60,8 @@ function ServicioDetalle({
   setTareas,
   archivos,
   setArchivos,
+  tareaId,
+  setTareaId,
 }) {
   const { setToken, setUser, token } = useContext(AuthContext);
   const [errorText, setErrorText] = useState();
@@ -386,6 +388,11 @@ function ServicioDetalle({
       console.log(error);
       setErrorText(error.response.data.error);
     }
+  };
+
+  const viewTarea = (element) => {
+    setTareaId(element.id);
+    navigateTo("/tareaDetalle");
   };
 
   console.log(empleadosAsignadosByServicio);
@@ -753,20 +760,29 @@ function ServicioDetalle({
             const fechaFinal = new Date(element.fecha_final);
             return (
               <tr key={index}>
-                <td>{element.titulo}</td>
-                <td>{element.descripcion}</td>
-                <td>
+                <td onClick={() => viewTarea(element)}>{element.titulo}</td>
+                <td onClick={() => viewTarea(element)}>
+                  {element.descripcion}
+                </td>
+                <td onClick={() => viewTarea(element)}>
                   {element.nombre} {element.apellido}
                 </td>
-                <th>{`${fechaComienzo.getDate()}/${
+                <td
+                  onClick={() => viewTarea(element)}
+                >{`${fechaComienzo.getDate()}/${
                   fechaComienzo.getMonth() + 1
-                }/${fechaComienzo.getFullYear()}`}</th>
-                <th>{`${fechaFinal.getDate()}/${
+                }/${fechaComienzo.getFullYear()}`}</td>
+                <td
+                  onClick={() => viewTarea(element)}
+                >{`${fechaFinal.getDate()}/${
                   fechaFinal.getMonth() + 1
-                }/${fechaFinal.getFullYear()}`}</th>
+                }/${fechaFinal.getFullYear()}`}</td>
 
-                <td>{element.prioridad}</td>
-                <td className={element.estado == "resuelta" ? "resuelta" : ""}>
+                <td onClick={() => viewTarea(element)}>{element.prioridad}</td>
+                <td
+                  onClick={() => viewTarea(element)}
+                  className={element.estado == "resuelta" ? "resuelta" : ""}
+                >
                   {element.estado}
                 </td>
 

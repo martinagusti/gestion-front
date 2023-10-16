@@ -31,6 +31,8 @@ import useServicios from "./hooks/useServicios";
 import Servicios from "./pages/Servicios";
 import ServicioDetalle from "./pages/ServicioDetalle";
 import useEmpleadosServicio from "./hooks/useEmpleadosServicio";
+import TareaDetalle from "./pages/TareaDetalle";
+import Tareas from "./pages/Tareas";
 
 function App() {
   const { setToken, setUser, token } = useContext(AuthContext);
@@ -63,6 +65,7 @@ function App() {
   const [idIncidencia, setIdIncidencia] = useState();
 
   const [page, setPage] = useState();
+  const [tareaId, setTareaId] = useState();
 
   const navigateTo = useNavigate();
 
@@ -136,6 +139,8 @@ function App() {
                 setProyectoArchivos={setProyectoArchivos}
                 setTareas={setTareas}
                 tareas={tareas}
+                tareaId={tareaId}
+                setTareaId={setTareaId}
                 proyectos={proyectos}
                 setProyectos={setProyectos}
                 nivel={nivel}
@@ -209,6 +214,34 @@ function App() {
           />
 
           <Route
+            path="/tareaDetalle"
+            element={
+              <TareaDetalle
+                tareaId={tareaId}
+                tareas={tareas}
+                archivos={archivos}
+                setTareas={setTareas}
+                nivel={nivel}
+                empleados={empleados}
+              />
+            }
+          />
+
+          <Route
+            path="/tareas"
+            element={
+              <Tareas
+                tareas={tareas}
+                nivel={nivel}
+                setTareas={setTareas}
+                tareaId={tareaId}
+                setTareaId={setTareaId}
+                empleados={empleados}
+              />
+            }
+          />
+
+          <Route
             path="/servicios"
             element={
               <Servicios
@@ -240,6 +273,8 @@ function App() {
                 nivel={nivel}
                 setTareas={setTareas}
                 tareas={tareas}
+                tareaId={tareaId}
+                setTareaId={setTareaId}
                 idServicio={idServicio}
                 empleados={empleados}
                 empleadosAsignados={empleadosAsignados}
